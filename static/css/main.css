@@ -1,0 +1,13 @@
+html, body {
+    height: 100%;
+}
+
+.general {
+    min-height: 100%;
+}
+
+footer {
+    position: relative;
+    display: block;
+    width: 100%;
+}
