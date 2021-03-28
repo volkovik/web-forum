@@ -38,6 +38,29 @@ def registration():
         return render_template("registration.html", title="Регистрация", form=form)
 
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+
+    render_data = {
+        "template_name_or_list": "login.html",
+        "title": "Авторизация",
+        "form": form
+    }
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.username == form.username.data).first()
+
+        if user and user.check_password(form.password.data):
+            return redirect("/")
+        else:
+            return render_template(**render_data, error="Неправильный логин или пароль")
+
+    else:
+        return render_template(**render_data)
+
+
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
     app.run()

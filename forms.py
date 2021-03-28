@@ -38,3 +38,9 @@ class RegistrationForm(FlaskForm):
         validators=[DataRequired(), EqualTo("password", "Пароли должны совпадать")]
     )
     submit = SubmitField("Зарегистрироваться")
+
+
+class LoginForm(FlaskForm):
+    username = StringField("Логин", validators=[DataRequired()])
+    password = StringField("Пароль", validators=[DataRequired()])
+    submit = SubmitField("Войти")

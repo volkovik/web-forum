@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Авторизация</h3>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <!-- Логин -->
+        <p>
+            <span class="text-muted">{{ form.username.label }}</span>
+            {{ form.username(class="form-control") }}
+            {% for error in form.username.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <!-- Пароль -->
+        <p>
+            <span class="text-muted">{{ form.password.label }}</span>
+            {{ form.password(class="form-control", type="password") }}
+            {% for error in form.password.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <!-- Сообщение об ошибке -->
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+        <!-- Кнопка входа -->
+        <p>{{ form.submit(type="submit", class="btn btn-dark float-end") }}</p>
+    </form>
+{% endblock %}
