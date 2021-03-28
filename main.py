@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect
+from flask_login import LoginManager, login_user, login_required, logout_user
 
 from forms import *
 from database import session as db_session
@@ -11,6 +12,15 @@ load_dotenv()  # загрузка переменных
 
 app = Flask("Internet forum")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 
 @app.route("/")
@@ -33,6 +43,8 @@ def registration():
         db_sess.add(user)
         db_sess.commit()
 
+        login_user(user, remember=True)
+
         return redirect("/")
     else:
         return render_template("registration.html", title="Регистрация", form=form)
@@ -53,12 +65,20 @@ def login():
         user = db_sess.query(User).filter(User.username == form.username.data).first()
 
         if user and user.check_password(form.password.data):
+            login_user(user, remember=True)
             return redirect("/")
         else:
             return render_template(**render_data, error="Неправильный логин или пароль")
 
     else:
         return render_template(**render_data)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 
 def main():
