@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, abort
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from forms import *
 from database import session as db_session
@@ -25,6 +25,7 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
+    """Главная страница форума. Показываются доступные темы"""
     db_sess = db_session.create_session()
     topics = db_sess.query(Topic).all()
 
@@ -33,11 +34,13 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def registration():
+    """Страница с формой регистрации на форуме"""
     form = RegistrationForm()
 
     if form.validate_on_submit():
         db_sess = db_session.create_session()
 
+        # Записываем пользователя в базу данных
         user = User(
             username=form.username.data,
             email=form.email.data
@@ -46,8 +49,8 @@ def registration():
         db_sess.add(user)
         db_sess.commit()
 
+        # Делаем авторизацию под пользователем, которого только что добавили
         login_user(user, remember=True)
-
         return redirect("/")
     else:
         return render_template("registration.html", title="Регистрация", form=form)
@@ -55,6 +58,7 @@ def registration():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """Страница с формой входа на форум"""
     form = LoginForm()
 
     render_data = {
@@ -67,6 +71,7 @@ def login():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == form.username.data).first()
 
+        # Если пользователь существует под этим логином и пароль правильный, то авторизируем его
         if user and user.check_password(form.password.data):
             login_user(user, remember=True)
             return redirect("/")
@@ -80,19 +85,37 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
+    """Выход из системы"""
     logout_user()
     return redirect("/")
 
 
-@app.route("/topic/<int:topic_id>")
+@app.route("/topic/<int:topic_id>", methods=["GET", "POST"])
 def topic_content(topic_id):
+    """Страница с комментариями из определённой темы"""
+    form = CommentForm()
+
     db_sess = db_session.create_session()
     topic = db_sess.query(Topic).get(topic_id)
 
-    if topic:
-        return render_template("topic.html", title=topic.title, topic=topic)
+    if form.validate_on_submit():
+        # Добавляем комментарий в базу данных
+        comment = Comment(
+            author_id=current_user.id,
+            topic_id=topic.id,
+            text=form.text.data
+        )
+
+        db_sess.add(comment)
+        db_sess.commit()
+
+        return redirect(f"/topic/{topic_id}")
     else:
-        abort(404, description="Темы с таким ID не существует")
+        # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
+        if topic:
+            return render_template("topic.html", title=topic.title, topic=topic, form=form)
+        else:
+            abort(404, description="Темы с таким ID не существует")
 
 
 def main():

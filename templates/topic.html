@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <!-- Первый комментарий самый главный. Здесь раскрывается заголовок темы -->
     <div class="card bg-light mb-3">
         <h3 class="card-header">{{ topic.title }}</h3>
         <div class="card-body">
@@ -13,6 +14,7 @@
             </div>
         </div>
     </div>
+    <!-- Остальные комментарии -->
     {% for comment in topic.comments[1:] %}
         <div class="card bg-light mb-3">
             <div class="card-body">
@@ -26,4 +28,35 @@
             </div>
         </div>
     {% endfor %}
+    <!-- Добавление своего комментария в тему -->
+    {% if current_user.is_authenticated %}
+        <p>
+            <button class="btn btn-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePostComment"
+                    aria-expanded="false" aria-controls="collapsePostComment">
+                Добавить комментарий
+            </button>
+        </p>
+        <div class="collapse" id="collapsePostComment">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Добавление комментария</h5>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post" novalidate>
+                        {{ form.hidden_tag() }}
+                        <p>
+                            <span class="text-muted">{{ form.text.label }}</span>
+                            {{ form.text(class="form-control") }}
+                            {% for error in form.text.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </p>
+                        <p>{{ form.submit(type="submit", class="btn btn-dark float-end") }}</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

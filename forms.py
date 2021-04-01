@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired as DataRequiredWtf, ValidationError, EqualTo, Length
 
@@ -9,7 +9,7 @@ from database.models import User
 
 class DataRequired(DataRequiredWtf):
     def __init__(self):
-        super(DataRequired, self).__init__("Это поле обязательно.")
+        super(DataRequired, self).__init__("Это поле обязательно")
 
 
 def is_username_unique(form, field):
@@ -23,7 +23,7 @@ def is_email_unique(form, field):
     db_sess = db_session.create_session()
 
     if db_sess.query(User).filter(User.email == field.data).first():
-        raise ValidationError("Пользователь с такой почтой уже существует.")
+        raise ValidationError("Пользователь с такой почтой уже существует")
 
 
 class RegistrationForm(FlaskForm):
@@ -44,3 +44,9 @@ class LoginForm(FlaskForm):
     username = StringField("Логин", validators=[DataRequired()])
     password = StringField("Пароль", validators=[DataRequired()])
     submit = SubmitField("Войти")
+
+
+class CommentForm(FlaskForm):
+    text = TextAreaField("Текст", validators=[DataRequired(),
+                                              Length(-1, 2048, "Текст не должен превышать более 2048 символов")])
+    submit = SubmitField("Отправить")
