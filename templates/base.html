@@ -32,9 +32,10 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
+                    <div class="navbar-nav ms-auto">
                         {% if current_user.is_authenticated %}
-                            <li class="nav-item dropdown">
+                            <a class="nav-link" href="/create_topic">Создать тему</a>
+                            <div class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ current_user.username }}
@@ -42,12 +43,12 @@
                                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                                     <li><a class="dropdown-item" href="/logout">Выйти</a></li>
                                 </ul>
-                            </li>
+                            </div>
                         {% else %}
-                            <li class="nav-item"><a href="/login" class="nav-link">Авторизация</a></li>
-                            <li class="nav-item"><a href="/register" class="nav-link">Регистрация</a></li>
+                            <a class="nav-link" href="/login">Авторизация</a>
+                            <a class="nav-link" href="/register">Регистрация</a>
                         {% endif %}
-                    </ul>
+                    </div>
                 </div>
             </div>
         </nav>

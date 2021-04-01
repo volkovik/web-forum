@@ -4,15 +4,23 @@
     <!-- Первый комментарий самый главный. Здесь раскрывается заголовок темы -->
     <div class="card bg-light mb-3">
         <h3 class="card-header">{{ topic.title }}</h3>
-        <div class="card-body">
-            {{ topic.comments[0].text }}
-        </div>
-        <div class="card-footer text-muted">
-            <div class="row">
-                <div class="col-sm text-start">{{ topic.comments[0].created_time.strftime("%d.%m.%Y %H:%M:%S") }}</div>
-                <div class="col-sm text-end">{{ topic.comments[0].author.username }}</div>
+        {% if topic.comments %}
+            <div class="card-body">
+                {{ topic.comments[0].text }}
             </div>
-        </div>
+            <div class="card-footer text-muted">
+                <div class="row">
+                    <div class="col-sm text-start">
+                        Опубликовано: {{ topic.comments[0].created_time.strftime("%d.%m.%Y %H:%M:%S") }}
+                    </div>
+                    <div class="col-sm text-end">Автор: {{ topic.comments[0].author.username }}</div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card-body">
+                <span class="text-muted">На данной теме ещё нет комментариев. Будьте первым, кто его оставит!</span>
+            </div>
+        {% endif %}
     </div>
     <!-- Остальные комментарии -->
     {% for comment in topic.comments[1:] %}
@@ -22,8 +30,10 @@
             </div>
             <div class="card-footer text-muted">
                 <div class="row">
-                    <div class="col-sm text-start">{{ comment.created_time.strftime("%d.%m.%Y %H:%M:%S") }}</div>
-                    <div class="col-sm text-end">{{ comment.author.username }}</div>
+                    <div class="col-sm text-start">
+                        Опубликовано: {{ comment.created_time.strftime("%d.%m.%Y %H:%M:%S") }}
+                    </div>
+                    <div class="col-sm text-end">Автор: {{ comment.author.username }}</div>
                 </div>
             </div>
         </div>

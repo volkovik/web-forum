@@ -118,6 +118,32 @@ def topic_content(topic_id):
             abort(404, description="Темы с таким ID не существует")
 
 
+@app.route("/create_topic", methods=["GET", "POST"])
+def create_topic():
+    """Страница с формой создания темы"""
+    form = TopicForm()
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        topic = Topic(
+            author_id=current_user.id,
+            title=form.title.data
+        )
+        db_sess.add(topic)
+        db_sess.commit()
+        comment = Comment(
+            author_id=current_user.id,
+            topic_id=topic.id,
+            text=form.text.data
+        )
+        db_sess.add(comment)
+        db_sess.commit()
+
+        return redirect("/")
+    else:
+        return render_template("create_topic.html", title="Создать тему", form=form)
+
+
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
     app.run()

@@ -6,15 +6,21 @@
             <div class="card-header">
                 <div class="row">
                     <b class="col-sm">{{ topic.title }}</b>
-                    <div class="col-sm text-end text-muted">Создан: {{ topic.comments[0].author.username }}</div>
+                    <div class="col-sm text-end text-muted">Создан: {{ topic.author.username }}</div>
                 </div>
             </div>
             <div class="card-body pb-2 pt-2">
-                 {{ topic.comments[0].text }}
+                {% if topic.comments %}
+                    {{ topic.comments[0].text }}
+                {% else %}
+                    <span class="text-muted">Нет комментариев</span>
+                {% endif %}
             </div>
-            <div class="card-footer text-end text-muted">
-                Обновлено: {{ topic.comments[-1].created_time.strftime("%d.%m.%Y") }}
-            </div>
+            {% if topic.comments %}
+                <div class="card-footer text-end text-muted">
+                    Обновлено: {{ topic.comments[-1].created_time.strftime("%d.%m.%Y") }}
+                </div>
+            {% endif %}
             <a href="/topic/{{ topic.id }}" class="stretched-link"></a>
         </div>
     {% endfor %}
