@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, abort
 from flask_login import LoginManager, login_user, login_required, logout_user
 
 from forms import *
@@ -79,6 +79,17 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.route("/topic/<int:topic_id>")
+def topic_content(topic_id):
+    db_sess = db_session.create_session()
+    topic = db_sess.query(Topic).get(topic_id)
+
+    if topic:
+        return render_template("topic.html", title=topic.title, topic=topic)
+    else:
+        abort(404, description="Темы с таким ID не существует")
 
 
 def main():
