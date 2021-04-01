@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for topic in topics %}
+        <div class="card bg-light mb-3">
+            <div class="card-header">
+                <div class="row">
+                    <b class="col-sm">{{ topic.title }}</b>
+                    <div class="col-sm text-end text-muted">Создан: {{ topic.comments[0].author.username }}</div>
+                </div>
+            </div>
+            <div class="card-body pb-2 pt-2">
+                 {{ topic.comments[0].text }}
+            </div>
+            <div class="card-footer text-end text-muted">
+                Обновлено: {{ topic.comments[-1].created_time.strftime("%d.%m.%Y") }}
+            </div>
+            <a href="/topic/{{ topic.id }}" class="stretched-link"></a>
+        </div>
+    {% endfor %}
+{% endblock %}

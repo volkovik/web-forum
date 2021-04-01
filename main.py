@@ -25,7 +25,10 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return render_template("base.html")
+    db_sess = db_session.create_session()
+    topics = db_sess.query(Topic).all()
+
+    return render_template("index.html", topics=topics)
 
 
 @app.route("/register", methods=["GET", "POST"])
