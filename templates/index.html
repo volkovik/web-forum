@@ -10,17 +10,17 @@
                 </div>
             </div>
             <div class="card-body pb-2 pt-2">
+                {{ topic.text }}
+            </div>
+            <div class="card-footer text-end text-muted">
+                Обновлено:
                 {% if topic.comments %}
-                    {{ topic.comments[0].text }}
+                    {{ topic.comments[-1].get_created_time() }}
                 {% else %}
-                    <span class="text-muted">Нет комментариев</span>
+                    {{ topic.get_created_time() }}
                 {% endif %}
             </div>
-            {% if topic.comments %}
-                <div class="card-footer text-end text-muted">
-                    Обновлено: {{ topic.comments[-1].get_created_time() }}
-                </div>
-            {% endif %}
+
             <a href="/topic/{{ topic.id }}" class="stretched-link"></a>
         </div>
     {% endfor %}

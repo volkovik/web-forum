@@ -127,16 +127,10 @@ def create_topic():
         db_sess = db_session.create_session()
         topic = Topic(
             author_id=current_user.id,
-            title=form.title.data
-        )
-        db_sess.add(topic)
-        db_sess.commit()
-        comment = Comment(
-            author_id=current_user.id,
-            topic_id=topic.id,
+            title=form.title.data,
             text=form.text.data
         )
-        db_sess.add(comment)
+        db_sess.add(topic)
         db_sess.commit()
 
         return redirect("/")

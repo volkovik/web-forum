@@ -45,6 +45,7 @@ class Topic(SqlAlchemyBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("users.id"))
     title = Column(String)
+    text = Column(String)
     created_time = Column(DateTime, default=datetime.datetime.now)
 
     author = orm.relation("User")

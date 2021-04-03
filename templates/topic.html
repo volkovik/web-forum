@@ -4,26 +4,20 @@
     <!-- Первый комментарий самый главный. Здесь раскрывается заголовок темы -->
     <div class="card bg-light mb-3">
         <h3 class="card-header">{{ topic.title }}</h3>
-        {% if topic.comments %}
-            <div class="card-body">
-                {{ topic.comments[0].text }}
-            </div>
-            <div class="card-footer text-muted">
-                <div class="row">
-                    <div class="col-sm text-start">
-                        Опубликовано: {{ topic.comments[0].get_created_time(True) }}
-                    </div>
-                    <div class="col-sm text-end">Автор: {{ topic.comments[0].author.username }}</div>
+        <div class="card-body">
+            {{ topic.text }}
+        </div>
+        <div class="card-footer text-muted">
+            <div class="row">
+                <div class="col-sm text-start">
+                    Опубликовано: {{ topic.get_created_time(True) }}
                 </div>
+                <div class="col-sm text-end">Автор: {{ topic.author.username }}</div>
             </div>
-        {% else %}
-            <div class="card-body">
-                <span class="text-muted">На данной теме ещё нет комментариев. Будьте первым, кто его оставит!</span>
-            </div>
-        {% endif %}
+        </div>
     </div>
     <!-- Остальные комментарии -->
-    {% for comment in topic.comments[1:] %}
+    {% for comment in topic.comments %}
         <div class="card bg-light mb-3">
             <div class="card-body">
                 {{ comment.text }}
