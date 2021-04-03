@@ -11,7 +11,7 @@
             <div class="card-footer text-muted">
                 <div class="row">
                     <div class="col-sm text-start">
-                        Опубликовано: {{ topic.comments[0].created_time.strftime("%d.%m.%Y %H:%M:%S") }}
+                        Опубликовано: {{ topic.comments[0].get_created_time(True) }}
                     </div>
                     <div class="col-sm text-end">Автор: {{ topic.comments[0].author.username }}</div>
                 </div>
@@ -31,7 +31,7 @@
             <div class="card-footer text-muted">
                 <div class="row">
                     <div class="col-sm text-start">
-                        Опубликовано: {{ comment.created_time.strftime("%d.%m.%Y %H:%M:%S") }}
+                        Опубликовано: {{ comment.get_created_time(True) }}
                     </div>
                     <div class="col-sm text-end">Автор: {{ comment.author.username }}</div>
                 </div>

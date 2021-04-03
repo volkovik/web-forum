@@ -21,11 +21,21 @@ class User(SqlAlchemyBase, UserMixin):
     topics = orm.relation("Topic", back_populates="author")
     comments = orm.relation("Comment", back_populates="author")
 
-    def set_password(self, password):
+    def set_password(self, password: str):
+        """Поставить пароль"""
         self.hashed_password = generate_password_hash(password)
 
-    def check_password(self, password):
+    def check_password(self, password: str) -> bool:
+        """Проверить пароль по хешу"""
         return check_password_hash(self.hashed_password, password)
+
+    def get_created_time(self, time: bool = False) -> str:
+        """
+        Получить дату и время создания пользователя в удобном виде
+
+        :arg time: вернуть дату с временем
+        """
+        return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
 
 
 class Topic(SqlAlchemyBase):
@@ -40,6 +50,14 @@ class Topic(SqlAlchemyBase):
     author = orm.relation("User")
     comments = orm.relation("Comment", back_populates="topic")
 
+    def get_created_time(self, time=False) -> str:
+        """
+        Получить дату и время создания темы в удобном виде
+
+        :arg time: вернуть дату с временем
+        """
+        return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
+
 
 class Comment(SqlAlchemyBase):
     """Модель комментария в теме"""
@@ -53,3 +71,11 @@ class Comment(SqlAlchemyBase):
 
     author = orm.relation("User")
     topic = orm.relation("Topic")
+
+    def get_created_time(self, time=False) -> str:
+        """
+        Получить дату и время создания комментария в удобном виде
+
+        :arg time: вернуть дату с временем
+        """
+        return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
