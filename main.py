@@ -33,7 +33,7 @@ def index():
 
 
 @app.route("/register", methods=["GET", "POST"])
-def registration():
+def register():
     """Страница с формой регистрации на форуме"""
     form = RegistrationForm()
 

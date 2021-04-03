@@ -21,7 +21,7 @@
                 {% endif %}
             </div>
 
-            <a href="/topic/{{ topic.id }}" class="stretched-link"></a>
+            <a href="{{ url_for("topic_content", topic_id=topic.id) }}" class="stretched-link"></a>
         </div>
     {% endfor %}
 {% endblock %}
