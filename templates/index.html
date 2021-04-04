@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <h1 class="mb-4">Темы</h1>
     {% for topic in topics %}
         <div class="card bg-light mb-3">
             <div class="card-header">
@@ -20,7 +21,6 @@
                     {{ topic.get_created_time() }}
                 {% endif %}
             </div>
-
             <a href="{{ url_for("topic_content", topic_id=topic.id) }}" class="stretched-link"></a>
         </div>
     {% endfor %}

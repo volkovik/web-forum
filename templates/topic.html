@@ -18,7 +18,7 @@
     </div>
     <!-- Остальные комментарии -->
     {% for comment in topic.comments %}
-        <div class="card bg-light mb-3">
+        <div class="card bg-light mb-3" id="comment-{{ comment.id }}">
             <div class="card-body">
                 {{ comment.text }}
             </div>

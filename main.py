@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, abort
+from flask import Flask, render_template, redirect, abort, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from forms import *
@@ -109,7 +109,7 @@ def topic_content(topic_id):
         db_sess.add(comment)
         db_sess.commit()
 
-        return redirect(f"/topic/{topic_id}")
+        return redirect(url_for("topic_content", topic_id=topic_id, _anchor=f"comment-{comment.id}"))
     else:
         # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
         if topic:
