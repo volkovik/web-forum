@@ -119,6 +119,7 @@ def topic_content(topic_id):
 
 
 @app.route("/create_topic", methods=["GET", "POST"])
+@login_required
 def create_topic():
     """Страница с формой создания темы"""
     form = TopicForm()
