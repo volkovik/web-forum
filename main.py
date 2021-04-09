@@ -1,7 +1,8 @@
 import os
+from pprint import pprint
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, abort, url_for
+from flask import Flask, render_template, redirect, abort, url_for, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from forms import *
@@ -109,11 +110,26 @@ def topic_content(topic_id):
         db_sess.add(comment)
         db_sess.commit()
 
-        return redirect(url_for("topic_content", topic_id=topic_id, _anchor=f"comment-{comment.id}"))
+        # Переводим на последнию страницу с комментариями и ссылаемся на комментарий, оставленный пользователем
+        return redirect(url_for(
+            "topic_content",
+            topic_id=topic_id,
+            _anchor=f"comment-{comment.id}",
+            page=len(topic.comments) // 10 + 1 if len(topic.comments) % 10 != 0 else len(topic.comments) // 10)
+        )
     else:
         # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
         if topic:
-            return render_template("topic.html", title=topic.title, topic=topic, form=form)
+            page = request.args.get("page", 1, type=int)
+            pagination_comments = [topic.comments[i:i + 10] for i in range(0, len(topic.comments), 10)]
+
+            # Если номер страницы ошибочный (несуществует или отрицательный), то изменить на первую страницу
+            if 0 >= page or page > len(pagination_comments):
+                page = 1
+
+            return render_template(
+                "topic.html", title=topic.title, topic=topic, comments=pagination_comments, page=page, form=form
+            )
         else:
             abort(404, description="Темы с таким ID не существует")
 
