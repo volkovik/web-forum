@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <!-- Первый комментарий самый главный. Здесь раскрывается заголовок темы -->
+    <!-- Описание темы -->
     <div class="card bg-light mb-3">
         <h3 class="card-header">{{ topic.title }}</h3>
         {% if page == 1 %}
@@ -20,7 +20,7 @@
             </div>
         {% endif %}
     </div>
-    <!-- Остальные комментарии -->
+    <!-- Комментарии к теме -->
     {% for comment in comments[page - 1] %}
         <div class="card bg-light mb-3" id="comment-{{ comment.id }}">
             <div class="card-body">
