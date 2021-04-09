@@ -6,7 +6,9 @@
         <h3 class="card-header">{{ topic.title }}</h3>
         {% if page == 1 %}
             <div class="card-body">
-                {{ topic.text }}
+                {% for p in topic.text.split("\n") %}
+                    <p>{{ p }}</p>
+                {% endfor %}
             </div>
             <div class="card-footer text-muted">
                 <div class="row">
@@ -22,7 +24,9 @@
     {% for comment in comments[page - 1] %}
         <div class="card bg-light mb-3" id="comment-{{ comment.id }}">
             <div class="card-body">
-                {{ comment.text }}
+                {% for p in comment.text.split("\n") %}
+                    <p>{{ p }}</p>
+                {% endfor %}
             </div>
             <div class="card-footer text-muted">
                 <div class="row">
