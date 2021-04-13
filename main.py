@@ -155,6 +155,46 @@ def create_topic():
         return render_template("create_topic.html", title="Создать тему", form=form)
 
 
+@app.route("/topic/<int:topic_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_topic(topic_id):
+    """Редактирование темы"""
+    db_sess = db_session.create_session()
+    topic = db_sess.query(Topic).get(topic_id)
+
+    if not topic:
+        abort(404, description="Темы с таким ID не существует")
+
+    form = EditTopicForm()
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        topic = db_sess.query(Topic).get(topic_id)
+
+        # Если была нажата кнопка "Удалить"
+        if form.delete.data:
+            db_sess.delete(topic)
+            db_sess.commit()
+
+            return redirect(url_for("index"))
+        # В остальных случаях считаем, что была нажата кнопка "Сохранить"
+        else:
+            if topic.title == form.title.data and topic.text == form.text.data:
+                return render_template("edit_topic.html", title="Редактировать тему", form=form,
+                                       error="Данные формы совпадают с исходными данными")
+            else:
+                topic.title = form.title.data
+                topic.text = form.text.data
+                db_sess.commit()
+
+                return redirect(url_for("topic_content", topic_id=topic_id))
+    else:
+        # Впишем значение из базы данных, чтобы пользователю упростить редактирование
+        form.title.data = topic.title
+        form.text.data = topic.text
+        return render_template("edit_topic.html", title="Редактировать тему", form=form)
+
+
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
     app.run()

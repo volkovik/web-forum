@@ -3,7 +3,13 @@
 {% block content %}
     <!-- Описание темы -->
     <div class="card bg-light mb-3">
-        <h3 class="card-header">{{ topic.title }}</h3>
+        <div class="card-header d-flex flex-row justify-content-between">
+            <h3>{{ topic.title }}</h3>
+            <a class="btn btn-dark align-self-center" role="button"
+               href="{{ url_for("edit_topic", topic_id=topic.id) }}">
+                Редактировать
+            </a>
+        </div>
         {% if page == 1 %}
             <div class="card-body">
                 {% for p in topic.text.split("\n") %}

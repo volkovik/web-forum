@@ -52,9 +52,18 @@ class CommentForm(FlaskForm):
     submit = SubmitField("Отправить")
 
 
+class EditCommentForm(CommentForm):
+    submit = SubmitField("Сохранить")
+
+
 class TopicForm(FlaskForm):
     title = StringField("Заголовок", validators=[DataRequired(),
-                                                 Length(-1, 32, "Заголовок не должен превышать более 32 символов")])
+                                                 Length(-1, 128, "Заголовок не должен превышать более 128 символов")])
     text = TextAreaField("Текст", validators=[DataRequired(),
-                                              Length(-1, 2048, "Текст не должен превышать более 2048 символов")])
+                                              Length(-1, 10240, "Текст не должен превышать более 10240 символов")])
     submit = SubmitField("Создать")
+
+
+class EditTopicForm(TopicForm):
+    submit = SubmitField("Сохранить")
+    delete = SubmitField("Удалить")
