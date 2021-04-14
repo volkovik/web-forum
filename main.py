@@ -1,5 +1,4 @@
 import os
-from pprint import pprint
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, abort, url_for, request
@@ -168,9 +167,6 @@ def edit_topic(topic_id):
     form = EditTopicForm()
 
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        topic = db_sess.query(Topic).get(topic_id)
-
         # Если была нажата кнопка "Удалить"
         if form.delete.data:
             db_sess.delete(topic)
@@ -193,6 +189,40 @@ def edit_topic(topic_id):
         form.title.data = topic.title
         form.text.data = topic.text
         return render_template("edit_topic.html", title="Редактировать тему", form=form)
+
+
+@app.route("/comment/<int:comment_id>/edit", methods=["GET", "POST"])
+def edit_comment(comment_id):
+    """Редактирование комментария"""
+    db_sess = db_session.create_session()
+    comment = db_sess.query(Comment).get(comment_id)
+
+    if not comment:
+        abort(404, description="Комментария с таким ID не существует")
+
+    form = EditCommentForm()
+
+    if form.validate_on_submit():
+        # Если была нажата кнопка "Удалить"
+        if form.delete.data:
+            db_sess.delete(comment)
+            db_sess.commit()
+
+            return redirect(url_for("topic_content", topic_id=comment.topic_id))
+        # В остальных случаях считаем, что была нажата кнопка "Сохранить"
+        else:
+            if comment.text == form.text.data:
+                return render_template("edit_comment.html", title="Редактировать комментарий", form=form,
+                                       error="Данные формы совпадают с исходными данными")
+            else:
+                comment.text = form.text.data
+                db_sess.commit()
+
+                return redirect(url_for("topic_content", topic_id=comment.topic_id))
+    else:
+        # Впишем значение из базы данных, чтобы пользователю упростить редактирование
+        form.text.data = comment.text
+        return render_template("edit_comment.html", title="Редактировать комментарий", form=form)
 
 
 def main():

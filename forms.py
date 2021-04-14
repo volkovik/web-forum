@@ -54,6 +54,7 @@ class CommentForm(FlaskForm):
 
 class EditCommentForm(CommentForm):
     submit = SubmitField("Сохранить")
+    delete = SubmitField("Удалить")
 
 
 class TopicForm(FlaskForm):
