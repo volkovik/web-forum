@@ -4,17 +4,15 @@
     <h1 class="mb-4">Темы</h1>
     {% for topic in topics %}
         <div class="card bg-light mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <b class="col-xl-10">
-                        {% if topic.title.split().__len__() > 12 %}
-                            {{ " ".join(topic.title.split()[:12]) }}...
-                        {% else %}
-                            {{ topic.title }}
-                        {% endif %}
-                    </b>
-                    <div class="col-sm text-end text-muted">Создан: {{ topic.author.username }}</div>
-                </div>
+            <div class="card-header d-flex justify-content-between">
+                <b>
+                    {% if topic.title.split().__len__() > 12 %}
+                        {{ " ".join(topic.title.split()[:12]) }}...
+                    {% else %}
+                        {{ topic.title }}
+                    {% endif %}
+                </b>
+                <div class="text-end text-muted">Создан: {{ topic.author.username }}</div>
             </div>
             <div class="card-body pb-2 pt-2">
                 {% if topic.text.split().__len__() > 32 %}

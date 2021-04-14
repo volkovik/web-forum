@@ -16,13 +16,9 @@
                     <p>{{ p }}</p>
                 {% endfor %}
             </div>
-            <div class="card-footer text-muted">
-                <div class="row">
-                    <div class="col-sm text-start">
-                        Опубликовано: {{ topic.get_created_time(True) }}
-                    </div>
-                    <div class="col-sm text-end">Автор: {{ topic.author.username }}</div>
-                </div>
+            <div class="card-footer text-muted d-flex justify-content-between">
+                <div>Опубликовано: {{ topic.get_created_time(True) }}</div>
+                <div class="text-end">Автор: {{ topic.author.username }}</div>
             </div>
         {% endif %}
     </div>
@@ -34,13 +30,9 @@
                     <p>{{ p }}</p>
                 {% endfor %}
             </div>
-            <div class="card-footer text-muted">
-                <div class="row">
-                    <div class="col-sm text-start">
-                        Опубликовано: {{ comment.get_created_time(True) }}
-                    </div>
-                    <div class="col-sm text-end">Автор: {{ comment.author.username }}</div>
-                </div>
+            <div class="card-footer text-muted d-flex justify-content-between">
+                <div>Опубликовано: {{ comment.get_created_time(True) }}</div>
+                <div class="text-end">Автор: {{ comment.author.username }}</div>
             </div>
         </div>
     {% endfor %}
