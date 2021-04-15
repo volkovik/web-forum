@@ -1,3 +1,4 @@
+import itertools
 import os
 
 from dotenv import load_dotenv
@@ -27,9 +28,9 @@ def load_user(user_id):
 def index():
     """Главная страница форума. Показываются доступные темы"""
     db_sess = db_session.create_session()
-    topics = db_sess.query(Topic).all()
+    categories = itertools.groupby(db_sess.query(Topic).all(), key=lambda t: t.category)
 
-    return render_template("index.html", topics=topics)
+    return render_template("index.html", categories=categories)
 
 
 @app.route("/register", methods=["GET", "POST"])
