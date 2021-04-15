@@ -38,17 +38,29 @@ class User(SqlAlchemyBase, UserMixin):
         return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
 
 
+class Category(SqlAlchemyBase):
+    """Модель категории"""
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String, unique=True)
+
+    topics = orm.relation("Topic", back_populates="category")
+
+
 class Topic(SqlAlchemyBase):
     """Модель темы"""
     __tablename__ = "topics"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("users.id"))
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
     title = Column(String)
     text = Column(String)
     created_time = Column(DateTime, default=datetime.datetime.now)
 
     author = orm.relation("User")
+    category = orm.relation("Category")
     comments = orm.relation("Comment", back_populates="topic")
 
     def get_created_time(self, time=False) -> str:
