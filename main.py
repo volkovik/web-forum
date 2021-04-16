@@ -111,12 +111,7 @@ def topic_content(topic_id):
         db_sess.commit()
 
         # Переводим на последнию страницу с комментариями и ссылаемся на комментарий, оставленный пользователем
-        return redirect(url_for(
-            "topic_content",
-            topic_id=topic_id,
-            _anchor=f"comment-{comment.id}",
-            page=len(topic.comments) // 10 + 1 if len(topic.comments) % 10 != 0 else len(topic.comments) // 10)
-        )
+        return redirect(url_for("redirect_to_comment", comment_id=comment.id))
     else:
         # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
         if topic:
@@ -192,6 +187,27 @@ def edit_topic(topic_id):
         return render_template("edit_topic.html", title="Редактировать тему", form=form)
 
 
+@app.route("/comment/<int:comment_id>")
+def redirect_to_comment(comment_id: int):
+    """Перейти к комментарию в теме"""
+    db_sess = db_session.create_session()
+    comment = db_sess.query(Comment).get(comment_id)
+
+    if not comment or not comment.topic:
+        abort(404, "Комментария с таким ID не существует")
+    else:
+        topic = comment.topic
+
+        page = topic.comments.index(comment) // 10 + 1
+
+        return redirect(url_for(
+            "topic_content",
+            topic_id=topic.id,
+            _anchor=f"comment-{comment.id}",
+            page=page
+        ))
+
+
 @app.route("/comment/<int:comment_id>/edit", methods=["GET", "POST"])
 def edit_comment(comment_id):
     """Редактирование комментария"""
@@ -219,7 +235,7 @@ def edit_comment(comment_id):
                 comment.text = form.text.data
                 db_sess.commit()
 
-                return redirect(url_for("topic_content", topic_id=comment.topic_id))
+                return redirect(url_for("redirect_to_comment", comment_id=comment.id))
     else:
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.text.data = comment.text
