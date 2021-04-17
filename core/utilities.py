@@ -17,14 +17,18 @@ time_types = (
 
 
 def get_passed_time(time: datetime) -> str:
-    """Сколько времени прошло с определённого момента"""
+    """Сколько прошло времени с определённого момента"""
     passed_time = datetime.now() - time
 
+    # Находим самый большой промежуток времени: от года до секунды
     for word, seconds in time_types:
-        number = passed_time.seconds // seconds
-        word = word
+        number = int(passed_time.total_seconds() // seconds)
 
         if number != 0:
+            # С помощью модуля pymorphy2 ставим слово в винительном падеже и согласуем с числом
+            text = f"{number} {morphy.parse(word)[0].inflect({'accs'}).make_agree_with_number(number).word} назад"
             break
+    else:
+        text = "только что"
 
-    return f"{number} {morphy.parse(word)[0].make_agree_with_number(number).word} назад"
+    return text
