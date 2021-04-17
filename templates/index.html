@@ -22,7 +22,7 @@
                                 {{ topic.title }}
                             {% endif %}
                         </h6>
-                        <small class="text-muted">{{ topic.get_created_time() }}</small>
+                        <small class="text-muted text-end">{{ topic.get_created_time() }}</small>
                     </div>
                     <small class="mb-1">
                         {% if topic.text.split().__len__() > 16 %}

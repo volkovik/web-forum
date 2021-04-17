@@ -4,7 +4,8 @@ from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .session import SqlAlchemyBase
+from database.session import SqlAlchemyBase
+from core.utilities import get_passed_time
 
 
 # Модели базы данных
@@ -29,13 +30,9 @@ class User(SqlAlchemyBase, UserMixin):
         """Проверить пароль по хешу"""
         return check_password_hash(self.hashed_password, password)
 
-    def get_created_time(self, time: bool = False) -> str:
-        """
-        Получить дату и время создания пользователя в удобном виде
-
-        :arg time: вернуть дату с временем
-        """
-        return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
+    def get_created_time(self) -> str:
+        """Получить дату и время создания пользователя в удобном виде"""
+        return get_passed_time(self.created_time)
 
 
 class Category(SqlAlchemyBase):
@@ -63,13 +60,9 @@ class Topic(SqlAlchemyBase):
     category = orm.relation("Category")
     comments = orm.relation("Comment", back_populates="topic")
 
-    def get_created_time(self, time=False) -> str:
-        """
-        Получить дату и время создания темы в удобном виде
-
-        :arg time: вернуть дату с временем
-        """
-        return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
+    def get_created_time(self) -> str:
+        """Получить дату и время создания темы в удобном виде"""
+        return get_passed_time(self.created_time)
 
 
 class Comment(SqlAlchemyBase):
@@ -85,10 +78,6 @@ class Comment(SqlAlchemyBase):
     author = orm.relation("User")
     topic = orm.relation("Topic")
 
-    def get_created_time(self, time=False) -> str:
-        """
-        Получить дату и время создания комментария в удобном виде
-
-        :arg time: вернуть дату с временем
-        """
-        return self.created_time.strftime(f"%d.%m.%Y{' %H:%M:%S' if time else ''}")
+    def get_created_time(self) -> str:
+        """Получить дату и время создания комментария в удобном виде"""
+        return get_passed_time(self.created_time)

@@ -26,7 +26,7 @@
                 {% endfor %}
             </div>
             <div class="card-footer text-muted d-flex justify-content-between">
-                <div>Опубликовано: {{ topic.get_created_time(True) }}</div>
+                <div>Опубликовано: {{ topic.get_created_time() }}</div>
                 <div class="text-end">Автор: {{ topic.author.username }}</div>
             </div>
         {% endif %}
@@ -56,7 +56,7 @@
                 {% endfor %}
             </div>
             <div class="card-footer text-muted d-flex justify-content-between">
-                <div>Опубликовано: {{ comment.get_created_time(True) }}</div>
+                <div>Опубликовано: {{ comment.get_created_time() }}</div>
             </div>
         </div>
     {% endfor %}
