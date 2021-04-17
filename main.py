@@ -2,12 +2,13 @@ import itertools
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, abort, url_for, request
+from flask import Flask, redirect, abort, url_for, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
-from forms import *
+from core.forms import *
 from database import session as db_session
 from database.models import *
+from core.utilities import render
 
 load_dotenv()  # загрузка переменных
 
@@ -30,7 +31,7 @@ def index():
     db_sess = db_session.create_session()
     categories = itertools.groupby(db_sess.query(Topic).all(), key=lambda t: t.category)
 
-    return render_template("index.html", categories=categories)
+    return render("index.html", categories=categories)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -54,7 +55,7 @@ def register():
         login_user(user, remember=True)
         return redirect("/")
     else:
-        return render_template("registration.html", title="Регистрация", form=form)
+        return render("registration.html", title="Регистрация", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -77,10 +78,10 @@ def login():
             login_user(user, remember=True)
             return redirect("/")
         else:
-            return render_template(**render_data, error="Неправильный логин или пароль")
+            return render(**render_data, error="Неправильный логин или пароль")
 
     else:
-        return render_template(**render_data)
+        return render(**render_data)
 
 
 @app.route("/logout")
@@ -122,7 +123,7 @@ def topic_content(topic_id):
             if 0 >= page or page > len(pagination_comments):
                 page = 1
 
-            return render_template(
+            return render(
                 "topic.html", title=topic.title, topic=topic, comments=pagination_comments, page=page, form=form
             )
         else:
@@ -147,7 +148,7 @@ def create_topic():
 
         return redirect("/")
     else:
-        return render_template("create_topic.html", title="Создать тему", form=form)
+        return render("create_topic.html", title="Создать тему", form=form)
 
 
 @app.route("/topic/<int:topic_id>/edit", methods=["GET", "POST"])
@@ -172,7 +173,7 @@ def edit_topic(topic_id):
         # В остальных случаях считаем, что была нажата кнопка "Сохранить"
         else:
             if topic.title == form.title.data and topic.text == form.text.data:
-                return render_template("edit_topic.html", title="Редактировать тему", form=form,
+                return render("edit_topic.html", title="Редактировать тему", form=form,
                                        error="Данные формы совпадают с исходными данными")
             else:
                 topic.title = form.title.data
@@ -184,7 +185,7 @@ def edit_topic(topic_id):
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.title.data = topic.title
         form.text.data = topic.text
-        return render_template("edit_topic.html", title="Редактировать тему", form=form)
+        return render("edit_topic.html", title="Редактировать тему", form=form)
 
 
 @app.route("/comment/<int:comment_id>")
@@ -229,7 +230,7 @@ def edit_comment(comment_id):
         # В остальных случаях считаем, что была нажата кнопка "Сохранить"
         else:
             if comment.text == form.text.data:
-                return render_template("edit_comment.html", title="Редактировать комментарий", form=form,
+                return render("edit_comment.html", title="Редактировать комментарий", form=form,
                                        error="Данные формы совпадают с исходными данными")
             else:
                 comment.text = form.text.data
@@ -239,7 +240,7 @@ def edit_comment(comment_id):
     else:
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.text.data = comment.text
-        return render_template("edit_comment.html", title="Редактировать комментарий", form=form)
+        return render("edit_comment.html", title="Редактировать комментарий", form=form)
 
 
 def main():
