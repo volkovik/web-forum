@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">{{ title }}</h1>
+    <div class="list-group">
+        {% for topic in topics.get_page(page) %}
+            {% include "tools/topic_card.html" %}
+        {% endfor %}
+    </div>
+    {% from "tools/pagination.html" import create_pagination %}
+    {% if category %}
+        {{ create_pagination(topics, page, category.id, "category_content") }}
+    {% else %}
+        {{ create_pagination(topics, page, "no_category", "category_content") }}
+    {% endif %}
+{% endblock %}

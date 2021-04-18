@@ -1,0 +1,24 @@
+{# Шаблон для превью темы в категориях и на главной странице форума #}
+<a href="{{ url_for("topic_content", id=topic.id) }}"
+   class="list-group-item list-group-item-action">
+    <div class="d-flex justify-content-between">
+        <h6 class="mb-1">
+            {# Сократим заголовок, чтобы не заполнять очень много места #}
+            {% if topic.title.split().__len__() > 12 %}
+                {{ " ".join(topic.title.split()[:12]) }}...
+            {% else %}
+                {{ topic.title }}
+            {% endif %}
+        </h6>
+        <small class="text-muted text-end">{{ topic.get_created_time() }}</small>
+    </div>
+    <small class="mb-1">
+        {# И обязательно сократим описание темы #}
+        {% if topic.text.split().__len__() > 16 %}
+            {{ " ".join(topic.text.split()[:16]) }}...
+        {% else %}
+            {{ topic.text }}
+        {% endif %}
+    </small>
+    <small class="text-muted">{{ topic.author.username }}</small>
+</a>

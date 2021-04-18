@@ -29,7 +29,14 @@ def load_user(user_id):
 def index():
     """Главная страница форума. Показываются доступные темы"""
     db_sess = db_session.create_session()
-    categories = itertools.groupby(db_sess.query(Topic).all(), key=lambda t: t.category)
+    # Группируем темы по категориям
+    categories = itertools.groupby(
+        sorted(
+            db_sess.query(Topic).all(), key=lambda t: ("" if t.category is None else t.category.title, t.created_time),
+            reverse=True
+        ),
+        lambda t: t.category
+    )
 
     return render("index.html", categories=categories)
 
@@ -92,13 +99,13 @@ def logout():
     return redirect("/")
 
 
-@app.route("/topic/<int:topic_id>", methods=["GET", "POST"])
-def topic_content(topic_id):
+@app.route("/topic/<int:id>", methods=["GET", "POST"])
+def topic_content(id):
     """Страница с комментариями из определённой темы"""
     form = CommentForm()
 
     db_sess = db_session.create_session()
-    topic = db_sess.query(Topic).get(topic_id)
+    topic = db_sess.query(Topic).get(id)
 
     if form.validate_on_submit():
         # Добавляем комментарий в базу данных
@@ -112,16 +119,13 @@ def topic_content(topic_id):
         db_sess.commit()
 
         # Переводим на последнию страницу с комментариями и ссылаемся на комментарий, оставленный пользователем
-        return redirect(url_for("redirect_to_comment", comment_id=comment.id))
+        return redirect(url_for("redirect_to_comment", id=comment.id))
     else:
         # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
         if topic:
+            # Распределение комментариев по страницам
             page = request.args.get("page", 1, type=int)
-            pagination_comments = [topic.comments[i:i + 10] for i in range(0, len(topic.comments), 10)]
-
-            # Если номер страницы ошибочный (несуществует или отрицательный), то изменить на первую страницу
-            if 0 >= page or page > len(pagination_comments):
-                page = 1
+            pagination_comments = topic.get_comments_pagination()
 
             return render(
                 "topic.html", title=topic.title, topic=topic, comments=pagination_comments, page=page, form=form
@@ -151,12 +155,12 @@ def create_topic():
         return render("create_topic.html", title="Создать тему", form=form)
 
 
-@app.route("/topic/<int:topic_id>/edit", methods=["GET", "POST"])
+@app.route("/topic/<int:id>/edit", methods=["GET", "POST"])
 @login_required
-def edit_topic(topic_id):
+def edit_topic(id):
     """Редактирование темы"""
     db_sess = db_session.create_session()
-    topic = db_sess.query(Topic).get(topic_id)
+    topic = db_sess.query(Topic).get(id)
 
     if not topic:
         abort(404, description="Темы с таким ID не существует")
@@ -180,7 +184,7 @@ def edit_topic(topic_id):
                 topic.text = form.text.data
                 db_sess.commit()
 
-                return redirect(url_for("topic_content", topic_id=topic_id))
+                return redirect(url_for("topic_content", id=id))
     else:
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.title.data = topic.title
@@ -188,32 +192,32 @@ def edit_topic(topic_id):
         return render("edit_topic.html", title="Редактировать тему", form=form)
 
 
-@app.route("/comment/<int:comment_id>")
-def redirect_to_comment(comment_id: int):
+@app.route("/comment/<int:id>")
+def redirect_to_comment(id: int):
     """Перейти к комментарию в теме"""
     db_sess = db_session.create_session()
-    comment = db_sess.query(Comment).get(comment_id)
+    comment = db_sess.query(Comment).get(id)
 
     if not comment or not comment.topic:
         abort(404, "Комментария с таким ID не существует")
     else:
         topic = comment.topic
-
-        page = topic.comments.index(comment) // 10 + 1
+        # Определяем, на которой странице находится комментарий
+        page = topic.get_comments_pagination().find_page(comment)
 
         return redirect(url_for(
             "topic_content",
-            topic_id=topic.id,
+            id=topic.id,
             _anchor=f"comment-{comment.id}",
             page=page
         ))
 
 
-@app.route("/comment/<int:comment_id>/edit", methods=["GET", "POST"])
-def edit_comment(comment_id):
+@app.route("/comment/<int:id>/edit", methods=["GET", "POST"])
+def edit_comment(id):
     """Редактирование комментария"""
     db_sess = db_session.create_session()
-    comment = db_sess.query(Comment).get(comment_id)
+    comment = db_sess.query(Comment).get(id)
 
     if not comment:
         abort(404, description="Комментария с таким ID не существует")
@@ -226,7 +230,7 @@ def edit_comment(comment_id):
             db_sess.delete(comment)
             db_sess.commit()
 
-            return redirect(url_for("topic_content", topic_id=comment.topic_id))
+            return redirect(url_for("topic_content", id=comment.topic_id))
         # В остальных случаях считаем, что была нажата кнопка "Сохранить"
         else:
             if comment.text == form.text.data:
@@ -236,11 +240,39 @@ def edit_comment(comment_id):
                 comment.text = form.text.data
                 db_sess.commit()
 
-                return redirect(url_for("redirect_to_comment", comment_id=comment.id))
+                return redirect(url_for("redirect_to_comment", id=comment.id))
     else:
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.text.data = comment.text
         return render("edit_comment.html", title="Редактировать комментарий", form=form)
+
+
+@app.route("/category/<id>")
+def category_content(id):
+    """Темы в категории"""
+    db_sess = db_session.create_session()
+    page = request.args.get("page", 1, type=int)
+
+    # Если был вставлен ID, то находим тему в базе данных по этому ID
+    if id.isdigit():
+        category = db_sess.query(Category).get(int(id))
+
+        if not category:
+            abort(404, description="Категории с таким ID не существует")
+
+        pagination_topics = category.get_topics_pagination()
+
+        return render("category.html", title=category.title, category=category, topics=pagination_topics, page=page)
+    # Если же был введён no_category, то показываем страницу с темами без категории
+    elif id == "no_category":
+        # Распределяем темы по страницам
+        pagination_topics = Pagination(sorted(
+            db_sess.query(Topic).filter(Topic.category_id == None).all(), key=lambda t: t.created_time, reverse=True
+        ), 10)
+
+        return render("category.html", title="Без категории", category=None, topics=pagination_topics, page=page)
+    else:
+        abort(400)
 
 
 def main():

@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.session import SqlAlchemyBase
-from core.utilities import get_passed_time
+from core.utilities import get_passed_time, Pagination
 
 
 # Модели базы данных
@@ -44,6 +44,14 @@ class Category(SqlAlchemyBase):
 
     topics = orm.relation("Topic", back_populates="category")
 
+    def get_topics_pagination(self, step: int = 10) -> Pagination:
+        """
+        Получить разделить список тем на страницы
+
+        :arg step: количество тем на странице
+        """
+        return Pagination(sorted(self.topics, key=lambda t: t.created_time, reverse=True), step)
+
 
 class Topic(SqlAlchemyBase):
     """Модель темы"""
@@ -63,6 +71,14 @@ class Topic(SqlAlchemyBase):
     def get_created_time(self) -> str:
         """Получить дату и время создания темы в удобном виде"""
         return get_passed_time(self.created_time)
+
+    def get_comments_pagination(self, step: int = 10) -> Pagination:
+        """
+        Получить разделить список комментариев на страницы
+
+        :arg step: количество комментариев на странице
+        """
+        return Pagination(sorted(self.comments, key=lambda c: c.created_time), step)
 
 
 class Comment(SqlAlchemyBase):

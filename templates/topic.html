@@ -13,7 +13,7 @@
                     <i class="bi bi-three-dots"></i>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTopic">
-                    <li><a href="{{ url_for("edit_topic", topic_id=topic.id) }}" class="dropdown-item">
+                    <li><a href="{{ url_for("edit_topic", id=topic.id) }}" class="dropdown-item">
                         Редактировать
                     </a></li>
                 </ul>
@@ -32,7 +32,7 @@
         {% endif %}
     </div>
     <!-- Комментарии к теме -->
-    {% for comment in comments[page - 1] %}
+    {% for comment in comments.get_page(page) %}
         <div class="card bg-light mb-3" id="comment-{{ comment.id }}">
             <div class="card-header d-flex justify-content-between">
                 <div class="align-self-center text-muted">Автор: {{ comment.author.username }}</div>
@@ -44,7 +44,7 @@
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonComment{{ comment.id }}">
-                        <li><a href="{{ url_for("edit_comment", comment_id=comment.id) }}" class="dropdown-item">
+                        <li><a href="{{ url_for("edit_comment", id=comment.id) }}" class="dropdown-item">
                             Редактировать
                         </a></li>
                     </ul>
@@ -92,59 +92,6 @@
         </div>
     {% endif %}
     <!-- Навигация по страницам темы -->
-    {% set max_pages = comments.__len__() %}
-    {% if max_pages != 1 %}
-        <nav>
-            <ul class="pagination justify-content-center">
-                {% if page != 1 and max_pages >= 2 %}
-                    <li class="page-item">
-                        <a href="{{ url_for("topic_content", topic_id=topic.id, page=page - 1) }}" class="page-link">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-                {% if page >= 4 %}
-                    <li class="page-item">
-                        <a href="{{ url_for("topic_content", topic_id=topic.id, page=1) }}" class="page-link">1</a>
-                    </li>
-                    {% if page == 5 %}
-                        <li class="page-item">
-                            <a href="{{ url_for("topic_content", topic_id=topic.id, page=2) }}" class="page-link">2</a>
-                        </li>
-                    {% elif page >= 6 %}
-                        <li class="page-item disabled"><a href="#" class="page-link">...</a></li>
-                    {% endif %}
-                {% endif %}
-                {% for p in range(page - 2 if page - 2 > 1 else 1, page + 3 if page + 2 < max_pages else max_pages + 1) %}
-                    <li class="page-item{% if page == p %} active{% endif %}">
-                        <a href="{{ url_for("topic_content", topic_id=topic.id, page=p) }}" class="page-link">
-                            {{ p }}
-                        </a>
-                    </li>
-                {% endfor %}
-                {% if page <= max_pages - 3 %}
-                    {% if page == max_pages - 4 %}
-                        <li class="page-item">
-                            <a href="{{ url_for("topic_content", topic_id=topic.id, page=max_pages - 1) }}"
-                               class="page-link">{{ max_pages - 1 }}</a>
-                        </li>
-                    {% elif page <= max_pages - 4 %}
-                        <li class="page-item disabled"><a href="#" class="page-link">...</a></li>
-                    {% endif %}
-                    <li class="page-item">
-                        <a href="{{ url_for("topic_content", topic_id=topic.id, page=max_pages) }}" class="page-link">
-                            {{ max_pages }}
-                        </a>
-                    </li>
-                {% endif %}
-                {% if page != max_pages and max_pages >= 2 %}
-                    <li class="page-item">
-                        <a href="{{ url_for("topic_content", topic_id=topic.id, page=page + 1) }}" class="page-link">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-    {% endif %}
+    {% from "tools/pagination.html" import create_pagination %}
+    {{ create_pagination(comments, page, topic.id, "topic_content") }}
 {% endblock %}

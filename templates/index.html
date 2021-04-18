@@ -5,38 +5,26 @@
     {% for category, topics in categories %}
         {% set topics = topics | list %}
         <div class="list-group mb-4">
-            <a href="#" class="list-group-item"><b>
-                {% if category %}
-                    {{ category.title }}
-                {% else %}
-                    Без категории
-                {% endif %}
-            </b></a>
-            {% for topic in topics[:3] %}
-                <a href="{{ url_for("topic_content", topic_id=topic.id) }}"
-                   class="list-group-item list-group-item-action">
-                    <div class="d-flex justify-content-between">
-                        <h6 class="mb-1">
-                            {% if topic.title.split().__len__() > 12 %}
-                                {{ " ".join(topic.title.split()[:12]) }}...
-                            {% else %}
-                                {{ topic.title }}
-                            {% endif %}
-                        </h6>
-                        <small class="text-muted text-end">{{ topic.get_created_time() }}</small>
-                    </div>
-                    <small class="mb-1">
-                        {% if topic.text.split().__len__() > 16 %}
-                            {{ " ".join(topic.text.split()[:16]) }}...
-                        {% else %}
-                            {{ topic.text }}
-                        {% endif %}
-                    </small>
-                    <small class="text-muted">{{ topic.author.username }}</small>
+            {# Определяем название категории #}
+            {% if category %}
+                {% set topic_id = category.id %}
+
+                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item">
+                    <b>{{ category.title }}</b>
                 </a>
+            {% else %}
+                {% set topic_id = "no_category" %}
+
+                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item">
+                    <b>Без категории</b>
+                </a>
+            {% endif %}
+            {% for topic in topics[:3] %}
+                {% include "tools/topic_card.html" %}
             {% endfor %}
+            {# Если в категории больше 3-х тем, то проинформировать пользователя, сколько тем было скрыто #}
             {% if topics | length > 3 %}
-                <a href="#" class="list-group-item link-secondary">
+                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item link-secondary">
                     <small>Показать ещё {{ make_agree_with_number(topics[3:] | length, "тема") }}</small>
                 </a>
             {% endif %}
