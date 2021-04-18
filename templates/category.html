@@ -4,7 +4,7 @@
     <h1 class="mb-4">{{ title }}</h1>
     <div class="list-group">
         {% for topic in topics.get_page(page) %}
-            {% include "tools/topic_card.html" %}
+            {% include "tools/topic_preview.html" %}
         {% endfor %}
     </div>
     {% from "tools/pagination.html" import create_pagination %}

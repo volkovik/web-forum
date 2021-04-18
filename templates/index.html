@@ -20,7 +20,7 @@
                 </a>
             {% endif %}
             {% for topic in topics[:3] %}
-                {% include "tools/topic_card.html" %}
+                {% include "tools/topic_preview.html" %}
             {% endfor %}
             {# Если в категории больше 3-х тем, то проинформировать пользователя, сколько тем было скрыто #}
             {% if topics | length > 3 %}

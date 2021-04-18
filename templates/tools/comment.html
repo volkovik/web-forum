@@ -1,0 +1,16 @@
+{% macro render_comment(comment_or_topic) -%}
+    {#
+    Сделать рендер комментария в топике. Можно зарендерить и тему
+
+    comment_or_topic -  модель базы данных комментария или темы
+    #}
+    <div class="list-group-item">
+        {% for p in comment_or_topic.text.split("\n") %}
+            <p>{{ p }}</p>
+        {% endfor %}
+        <div class="d-flex justify-content-between">
+            <small class="text-muted">{{ comment_or_topic.get_created_time() }}</small>
+            <small class="text-muted">{{ comment_or_topic.author.username }}</small>
+        </div>
+    </div>
+{%- endmacro %}
