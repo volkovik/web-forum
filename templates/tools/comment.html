@@ -6,11 +6,11 @@
     #}
     <div class="list-group-item">
         {% for p in comment_or_topic.text.split("\n") %}
-            <p>{{ p }}</p>
+            <p class="mb-1">{{ p }}</p>
         {% endfor %}
         <div class="d-flex justify-content-between">
-            <small class="text-muted">{{ comment_or_topic.get_created_time() }}</small>
             <small class="text-muted">{{ comment_or_topic.author.username }}</small>
+            <small class="text-muted">{{ comment_or_topic.get_created_time() }}</small>
         </div>
     </div>
 {%- endmacro %}
