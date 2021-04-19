@@ -183,7 +183,7 @@ def edit_topic(id):
         else:
             if topic.title == form.title.data and topic.text == form.text.data:
                 return render("edit_topic.html", title="Редактировать тему", form=form,
-                                       error="Данные формы совпадают с исходными данными")
+                              error="Данные формы совпадают с исходными данными")
             else:
                 topic.title = form.title.data
                 topic.text = form.text.data
@@ -219,6 +219,7 @@ def redirect_to_comment(id: int):
 
 
 @app.route("/comment/<int:id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_comment(id):
     """Редактирование комментария"""
     db_sess = db_session.create_session()

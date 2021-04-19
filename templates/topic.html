@@ -5,13 +5,27 @@
 {% block content %}
     <div class="list-group mb-4">
         <!-- Описание темы -->
-        <div class="list-group-item">
+        <div class="list-group-item d-flex justify-content-between">
             <h3>{{ topic.title }}</h3>
+            {% if current_user.is_authenticated %}
+                <div class="ms-1 dropdown align-self-center">
+                    <span type="button" class="float-end link-secondary"
+                            id="dropdownMenuButtonTopic" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        <i class="bi bi-three-dots"></i>
+                    </span>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTopic">
+                        <li><a href="{{ url_for("edit_topic", id=topic.id) }}" class="dropdown-item">
+                            Редактировать
+                        </a></li>
+                    </ul>
+                </div>
+            {% endif %}
         </div>
-        {{ render_comment(topic) }}
+        {{ render_comment(topic, current_user) }}
         <!-- Комментарии к теме -->
         {% for comment in comments.get_page(page) %}
-            {{ render_comment(comment) }}
+            {{ render_comment(comment, current_user) }}
         {% endfor %}
     </div>
     <!-- Добавление своего комментария в тему -->
