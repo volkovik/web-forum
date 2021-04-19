@@ -174,6 +174,8 @@ def edit_topic(id):
     # Сгенерируем список категорий, в которых пользователь может создать тему
     form.category.choices = [(None, "Без категории")] + \
                             [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
+    form.category.default = topic.category_id
+    form.process()
 
     if form.validate_on_submit():
         # Если была нажата кнопка "Удалить"
@@ -247,7 +249,7 @@ def edit_comment(id):
         else:
             if comment.text == form.text.data:
                 return render("edit_comment.html", title="Редактировать комментарий", form=form,
-                                       error="Данные формы совпадают с исходными данными")
+                              error="Данные формы совпадают с исходными данными")
             else:
                 comment.text = form.text.data
                 db_sess.commit()
