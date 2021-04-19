@@ -22,7 +22,9 @@
                 </div>
             {% endif %}
         </div>
-        {{ render_comment(topic, current_user) }}
+        {% if page == 1 %}
+            {{ render_comment(topic, current_user) }}
+        {% endif %}
         <!-- Комментарии к теме -->
         {% for comment in comments.get_page(page) %}
             {{ render_comment(comment, current_user) }}
