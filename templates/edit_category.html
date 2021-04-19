@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% from "tools/macros.html" import input, button_delete_with_alert %}
+
+{% block content %}
+    <h1 class="mb-3">Редактировать категорию</h1>
+    <!-- Ошибки формы -->
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ input(form.title) }}
+        <div class="d-flex justify-content-between">
+            {{ form.submit(type="submit", class="btn btn-dark") }}
+            {{ button_delete_with_alert("Удаление категории", "Вы действительно хотите удалить данную категорию?", form.delete) }}
+        </div>
+    </form>
+{% endblock %}

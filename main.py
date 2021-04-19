@@ -281,6 +281,70 @@ def category_content(id):
         abort(400)
 
 
+@app.route("/categories", methods=["GET", "POST"])
+def categories_list():
+    """Страница со списком всех категорий на форуме"""
+    db_sess = db_session.create_session()
+    categories = db_sess.query(Category).all()
+    # Для показа кол-ва тем без категории
+    no_category_length = len(db_sess.query(Topic).filter(Topic.category == None).all())
+
+    return render("categories_list.html", categories=categories, no_category_length=no_category_length)
+
+
+@app.route("/category/create", methods=["GET", "POST"])
+def create_category():
+    """Страница с формой создания категории"""
+    db_sess = db_session.create_session()
+
+    form = CategoryForm()
+
+    if form.validate_on_submit():
+        category = Category(
+            title=form.title.data
+        )
+        db_sess.add(category)
+        db_sess.commit()
+
+        return redirect(url_for("categories_list"))
+    else:
+        return render("create_category.html", title="Создать категорию", form=form)
+
+
+@app.route("/category/<int:id>/edit", methods=["GET", "POST"])
+def edit_category(id):
+    """Страница с формой редактирования категории"""
+    db_sess = db_session.create_session()
+    category = db_sess.query(Category).get(id)
+
+    if not category:
+        abort(404, "Категории с таким ID не существует")
+
+    form = EditCategoryForm()
+
+    if form.validate_on_submit():
+        # Если была нажата кнопка "Удалить"
+        if form.delete.data:
+            db_sess.delete(category)
+            db_sess.commit()
+
+            return redirect(url_for("categories_list"))
+        # В остальных случаях считаем, что была нажата кнопка "Сохранить"
+        else:
+            if category.title == form.title.data:
+                return render("edit_category.html", title="Редактировать категорию", form=form,
+                              error="Данные формы совпадают с исходными данными")
+            else:
+                category.title = form.title.data
+                db_sess.commit()
+
+                return redirect(url_for("categories_list"))
+    else:
+        # Впишем значение из базы данных, чтобы пользователю упростить редактирование
+        form.title.data = category.title
+        return render("edit_category.html", title="Редактировать категорию", form=form)
+
+
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
     app.run()

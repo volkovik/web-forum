@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="d-flex justify-content-between">
+        <h3 class="mb-3">Категории</h3>
+        <a href="{{ url_for("create_category") }}" class="btn btn-sm btn-dark align-self-center">Создать</a>
+    </div>
+    <div class="list-group">
+        {% for category in categories %}
+            <div class="list-group-item d-flex justify-content-between">
+                <a href="{{ url_for("category_content", id=category.id) }}"
+                   class="align-self-center nav-link p-0 link-dark">
+                    <b>{{ category.title }}</b></a>
+                <div>
+                    <span class="badge bg-dark rounded-pill align-self-center mx-2">{{ category.topics | length }}</span>
+                    <a href="{{ url_for("edit_category", id=category.id) }}"
+                       class="btn btn-sm btn-dark">Редактировать</a>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="list-group-item d-flex justify-content-between">
+            <a href="{{ url_for("category_content", id="no_category") }}"
+               class="align-self-center nav-link p-0 link-dark">
+                <b>Без категории</b>
+            </a>
+            <span class="badge bg-dark rounded-pill align-self-center">{{ no_category_length }}</span>
+        </div>
+
+    </div>
+{% endblock %}

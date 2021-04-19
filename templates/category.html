@@ -3,7 +3,10 @@
 {% from "tools/macros.html" import create_pagination %}
 
 {% block content %}
-    <h1 class="mb-4">{{ title }}</h1>
+    <div class="d-flex justify-content-between">
+        <h1 class="mb-4">{{ title }}</h1>
+        <span class="badge bg-dark rounded-pill align-self-center">{{ topics.get_items_length() }}</span>
+    </div>
     <div class="list-group">
         {% for topic in topics.get_page(page) %}
             {% include "tools/topic_preview.html" %}

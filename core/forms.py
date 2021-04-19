@@ -78,5 +78,21 @@ class TopicForm(FlaskForm):
 
 
 class EditTopicForm(TopicForm):
+    """Форма редактирования темы"""
+    submit = SubmitField("Сохранить")
+    delete = SubmitField("Удалить")
+
+
+class CategoryForm(FlaskForm):
+    """Форма создания категории"""
+    title = StringField(
+        "Заголовок",
+        validators=[DataRequired(), Length(-1, 128, "Заголовок не должен превышать более 128 символов")]
+    )
+    submit = SubmitField("Создать")
+
+
+class EditCategoryForm(CategoryForm):
+    """Форма редактирования категории"""
     submit = SubmitField("Сохранить")
     delete = SubmitField("Удалить")

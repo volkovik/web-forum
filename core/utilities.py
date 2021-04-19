@@ -89,5 +89,9 @@ class Pagination:
         else:
             return []
 
+    def get_items_length(self) -> int:
+        """Получить общие количество элементов"""
+        return len(self.unprocessed_items)
+
     def __iter__(self):
         return iter(self.paginated_items)
