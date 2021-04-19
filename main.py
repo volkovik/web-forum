@@ -171,6 +171,9 @@ def edit_topic(id):
         abort(404, description="Темы с таким ID не существует")
 
     form = EditTopicForm()
+    # Сгенерируем список категорий, в которых пользователь может создать тему
+    form.category.choices = [(None, "Без категории")] + \
+                            [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
 
     if form.validate_on_submit():
         # Если была нажата кнопка "Удалить"
@@ -181,12 +184,15 @@ def edit_topic(id):
             return redirect(url_for("index"))
         # В остальных случаях считаем, что была нажата кнопка "Сохранить"
         else:
-            if topic.title == form.title.data and topic.text == form.text.data:
+            form.category.data = None if form.category.data == "None" else form.category.data
+
+            if topic.title == form.title.data and topic.text == form.text.data and topic.category == form.category.data:
                 return render("edit_topic.html", title="Редактировать тему", form=form,
                               error="Данные формы совпадают с исходными данными")
             else:
                 topic.title = form.title.data
                 topic.text = form.text.data
+                topic.category = form.category.data
                 db_sess.commit()
 
                 return redirect(url_for("topic_content", id=id))
