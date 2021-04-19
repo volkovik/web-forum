@@ -20,5 +20,14 @@
             {{ topic.text }}
         {% endif %}
     </small>
-    <p class="m-0"><small class="text-muted">{{ topic.author.username }}</small></p>
+    <div class="d-flex justify-content-between text-muted">
+        <small>{{ topic.author.username }}</small>
+        <small>
+            {% if topic.comments | length == 0 %}
+                Нет ответов
+            {% else %}
+                {{ make_agree_with_number(topic.comments | length, "ответ") }}
+            {% endif %}
+        </small>
+    </div>
 </a>
