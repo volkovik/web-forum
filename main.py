@@ -294,7 +294,7 @@ def category_content(id):
 def categories_list():
     """Страница со списком всех категорий на форуме"""
     db_sess = db_session.create_session()
-    categories = db_sess.query(Category).all()
+    categories = db_sess.query(Category).order_by("title").all()
     # Для показа кол-ва тем без категории
     no_category_length = len(db_sess.query(Topic).filter(Topic.category == None).all())
 
