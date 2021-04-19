@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "tools/macros.html" import create_pagination %}
+
 {% block content %}
     <h1 class="mb-4">{{ title }}</h1>
     <div class="list-group">
@@ -7,7 +9,6 @@
             {% include "tools/topic_preview.html" %}
         {% endfor %}
     </div>
-    {% from "tools/pagination.html" import create_pagination %}
     {% if category %}
         {{ create_pagination(topics, page, category.id, "category_content") }}
     {% else %}

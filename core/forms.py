@@ -27,6 +27,7 @@ def is_email_unique(form, field):
 
 
 class RegistrationForm(FlaskForm):
+    """Форма регистрации"""
     username = StringField("Логин", validators=[DataRequired(), is_username_unique])
     email = EmailField("Эл. почта", validators=[DataRequired(), is_email_unique])
     password = PasswordField(
@@ -41,23 +42,29 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    """Форма авторизации"""
     username = StringField("Логин", validators=[DataRequired()])
     password = StringField("Пароль", validators=[DataRequired()])
     submit = SubmitField("Войти")
 
 
 class CommentForm(FlaskForm):
-    text = TextAreaField("Текст", validators=[DataRequired(),
-                                              Length(-1, 2048, "Текст не должен превышать более 2048 символов")])
+    """Форма создания комментария"""
+    text = TextAreaField(
+        "Текст",
+        validators=[DataRequired(), Length(-1, 2048, "Текст не должен превышать более 2048 символов")]
+    )
     submit = SubmitField("Отправить")
 
 
 class EditCommentForm(CommentForm):
+    """Форма редактирования комментария"""
     submit = SubmitField("Сохранить")
     delete = SubmitField("Удалить")
 
 
 class TopicForm(FlaskForm):
+    """Форма создания темы"""
     title = StringField(
         "Заголовок",
         validators=[DataRequired(), Length(-1, 128, "Заголовок не должен превышать более 128 символов")]

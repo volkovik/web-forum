@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "tools/macros.html" import input, button_delete_with_alert %}
+
 {% block content %}
     <h1 class="mb-3">Редактировать тему</h1>
     <!-- Ошибки формы -->
@@ -10,47 +12,12 @@
     {% endif %}
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
-        <p>
-            <span class="text-muted">{{ form.title.label }}</span>
-            {{ form.title(class="form-control") }}
-            {% for error in form.title.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
-        <p>
-            <span class="text-muted">{{ form.text.label }}</span>
-            {{ form.text(class="form-control") }}
-            {% for error in form.text.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
+        {{ input(form.title) }}
+        {{ input(form.text) }}
+        {{ input(form.category) }}
         <div class="d-flex justify-content-between">
             {{ form.submit(type="submit", class="btn btn-dark") }}
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Удалить
-            </button>
-        </div>
-        <!-- Предупреждение об удалении темы -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Удаление темы</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Вы действительно хотите удалить данную тему?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        {{ form.delete(type="submit", class="btn btn-danger") }}
-                    </div>
-                </div>
-            </div>
+            {{ button_delete_with_alert("Удаление темы", "Вы действительно хотите удалить данную тему?", form.delete) }}
         </div>
     </form>
 {% endblock %}

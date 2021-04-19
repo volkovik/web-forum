@@ -1,36 +1,14 @@
 {% extends "base.html" %}
 
+{% from "tools/macros.html" import input %}
+
 {% block content %}
     <h1 class="mb-3">Создать тему</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
-        <p>
-            <span class="text-muted">{{ form.title.label }}</span>
-            {{ form.title(class="form-control") }}
-            {% for error in form.title.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
-        <p>
-            <span class="text-muted">{{ form.text.label }}</span>
-            {{ form.text(class="form-control") }}
-            {% for error in form.text.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </p>
-        <p>
-            <span class="text-muted">{{ form.category.label }}</span>
-            {{ form.category(class="form-control") }}
-            {% for error in form.category.errors %}
-                <div class="alert alert-danger" role="alert">
-                {{ error }}
-                </div>
-            {% endfor %}
-        </p>
+        {{ input(form.title) }}
+        {{ input(form.text) }}
+        {{ input(form.category) }}
         <p>{{ form.submit(type="submit", class="btn btn-dark float-end") }}</p>
     </form>
 {% endblock %}

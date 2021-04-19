@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from "tools/comment.html" import render_comment %}
+{% from "tools/macros.html" import render_comment, create_pagination %}
 
 {% block content %}
     <div class="list-group mb-4">
@@ -62,6 +62,5 @@
         </div>
     {% endif %}
     <!-- Навигация по страницам темы -->
-    {% from "tools/pagination.html" import create_pagination %}
     {{ create_pagination(comments, page, topic.id, "topic_content") }}
 {% endblock %}
