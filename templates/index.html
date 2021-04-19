@@ -9,13 +9,13 @@
             {% if category %}
                 {% set topic_id = category.id %}
 
-                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item">
+                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
                     <b>{{ category.title }}</b>
                 </a>
             {% else %}
                 {% set topic_id = "no_category" %}
 
-                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item">
+                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
                     <b>Без категории</b>
                 </a>
             {% endif %}

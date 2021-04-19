@@ -4,7 +4,7 @@
 
     comment_or_topic -  модель базы данных комментария или темы
     #}
-    <div class="list-group-item">
+    <div class="list-group-item {% if comment_or_topic.__class__.__name__ == "Topic" %}bg-light{% endif %}">
         <div class="d-flex justify-content-between">
             <div>
                 {% for p in comment_or_topic.text.split("\n") %}
