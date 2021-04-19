@@ -5,21 +5,21 @@ import pymorphy2
 from flask import render_template
 
 morphy = pymorphy2.MorphAnalyzer()
-
-time_types = (
-    ("год", 60 * 60 * 24 * 365),
-    ("месяц", 60 * 60 * 24 * 28),
-    ("неделя", 60 * 60 * 24 * 7),
-    ("день", 60 * 60 * 24),
-    ("час", 60 * 60),
-    ("минута", 60),
-    ("секунда", 1),
-)
+months = ("январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь",
+          "декабрь")
 
 
-def make_agree_with_number(number, word):
-    """Согласует слово с числом и склоняет это же слово в винительном падеже"""
-    return f"{number} {morphy.parse(word)[0].inflect({'accs'}).make_agree_with_number(number).word}"
+def make_agree_with_number(number: int, word: str, without_number: bool = False) -> str:
+    """
+    Согласует слово с числом и склоняет это же слово в винительном падеже
+
+    :arg number: число, с которым нужно согласовать слово
+    :arg word: слово, которое нужно согласовать с числом
+    :arg without_number: получить только слово согласованное с числом
+    """
+    word = morphy.parse(word)[0].inflect({'accs'}).make_agree_with_number(number).word
+
+    return word if without_number else f"{number} {word}"
 
 
 def render(template_name_or_list, **context):
@@ -27,22 +27,30 @@ def render(template_name_or_list, **context):
     return render_template(template_name_or_list, make_agree_with_number=make_agree_with_number, **context)
 
 
-def get_passed_time(time: datetime) -> str:
-    """Сколько прошло времени с определённого момента"""
+def get_created_time(time: datetime) -> str:
+    """Возвращает дату в человеческом формате"""
+    time_now = datetime.now()
     passed_time = datetime.now() - time
 
-    # Находим самый большой промежуток времени: от года до секунды
-    for word, seconds in time_types:
-        number = int(passed_time.total_seconds() // seconds)
-
-        if number != 0:
-            # С помощью модуля pymorphy2 ставим слово в винительном падеже и согласуем с числом
-            text = f"{make_agree_with_number(number, word)} назад"
-            break
+    if time.year != time_now.year:
+        return f"{time.day} {morphy.parse(months[time.month - 1])[0].inflect({'gent'}).word} {time.year}"
+    elif passed_time.total_seconds() // 86400 >= 2:
+        return f"{time.day} {morphy.parse(months[time.month - 1])[0].inflect({'gent'}).word} в {time.strftime('%H:%M')}"
+    elif passed_time.total_seconds() // 86400 == 1:
+        return f"Вчера в {time.strftime('%H:%M')}"
+    elif passed_time.total_seconds() // 3600 >= 4:
+        return f"Сегодня в {time.strftime('%H:%M')}"
+    elif passed_time.total_seconds() // 3600 != 0:
+        t = int(passed_time.total_seconds() // 3600)
+        return f"{make_agree_with_number(t, 'час', t == 1)} назад".capitalize()
+    elif passed_time.total_seconds() // 60 > 0:
+        t = int(passed_time.total_seconds() // 60)
+        return f"{make_agree_with_number(t, 'минута', t == 1)} назад".capitalize()
+    elif int(passed_time.total_seconds()) != 0:
+        t = int(passed_time.total_seconds())
+        return f"{make_agree_with_number(t, 'секунда', t == 1)} назад".capitalize()
     else:
-        text = "только что"
-
-    return text
+        return "Только что"
 
 
 class Pagination:

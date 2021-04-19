@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.session import SqlAlchemyBase
-from core.utilities import get_passed_time, Pagination
+from core.utilities import get_created_time, Pagination
 
 
 # Модели базы данных
@@ -32,7 +32,7 @@ class User(SqlAlchemyBase, UserMixin):
 
     def get_created_time(self) -> str:
         """Получить дату и время создания пользователя в удобном виде"""
-        return get_passed_time(self.created_time)
+        return get_created_time(self.created_time)
 
 
 class Category(SqlAlchemyBase):
@@ -70,7 +70,7 @@ class Topic(SqlAlchemyBase):
 
     def get_created_time(self) -> str:
         """Получить дату и время создания темы в удобном виде"""
-        return get_passed_time(self.created_time)
+        return get_created_time(self.created_time)
 
     def get_comments_pagination(self, step: int = 10) -> Pagination:
         """
@@ -96,4 +96,4 @@ class Comment(SqlAlchemyBase):
 
     def get_created_time(self) -> str:
         """Получить дату и время создания комментария в удобном виде"""
-        return get_passed_time(self.created_time)
+        return get_created_time(self.created_time)
