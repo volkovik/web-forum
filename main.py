@@ -150,7 +150,7 @@ def create_topic():
             author_id=current_user.id,
             title=form.title.data,
             text=form.text.data,
-            category_id=form.category.data
+            category_id=None if form.category.data == "None" else form.category.data
         )
         db_sess.add(topic)
         db_sess.commit()
