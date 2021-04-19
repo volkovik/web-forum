@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired as DataRequiredWtf, ValidationError, EqualTo, Length
 
@@ -58,10 +58,15 @@ class EditCommentForm(CommentForm):
 
 
 class TopicForm(FlaskForm):
-    title = StringField("Заголовок", validators=[DataRequired(),
-                                                 Length(-1, 128, "Заголовок не должен превышать более 128 символов")])
-    text = TextAreaField("Текст", validators=[DataRequired(),
-                                              Length(-1, 10240, "Текст не должен превышать более 10240 символов")])
+    title = StringField(
+        "Заголовок",
+        validators=[DataRequired(), Length(-1, 128, "Заголовок не должен превышать более 128 символов")]
+    )
+    text = TextAreaField(
+        "Текст",
+        validators=[DataRequired(), Length(-1, 10240, "Текст не должен превышать более 10240 символов")]
+    )
+    category = SelectField("Категория")
     submit = SubmitField("Создать")
 
 

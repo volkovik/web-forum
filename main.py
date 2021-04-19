@@ -138,14 +138,19 @@ def topic_content(id):
 @login_required
 def create_topic():
     """Страница с формой создания темы"""
+    db_sess = db_session.create_session()
+
     form = TopicForm()
+    # Сгенерируем список категорий, в которых пользователь может создать тему
+    form.category.choices = [(None, "Без категории")] + \
+                            [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
 
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         topic = Topic(
             author_id=current_user.id,
             title=form.title.data,
-            text=form.text.data
+            text=form.text.data,
+            category_id=form.category.data
         )
         db_sess.add(topic)
         db_sess.commit()
