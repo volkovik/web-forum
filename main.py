@@ -288,6 +288,7 @@ def category_content(id):
 
 
 @app.route("/categories", methods=["GET", "POST"])
+@login_required
 def categories_list():
     """Страница со списком всех категорий на форуме"""
     db_sess = db_session.create_session()
@@ -299,6 +300,7 @@ def categories_list():
 
 
 @app.route("/category/create", methods=["GET", "POST"])
+@login_required
 def create_category():
     """Страница с формой создания категории"""
     db_sess = db_session.create_session()
@@ -318,6 +320,7 @@ def create_category():
 
 
 @app.route("/category/<int:id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_category(id):
     """Страница с формой редактирования категории"""
     db_sess = db_session.create_session()
