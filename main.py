@@ -32,7 +32,7 @@ def index():
     # Группируем темы по категориям
     categories = itertools.groupby(
         sorted(
-            db_sess.query(Topic).order_by("is_pinned", "created_time").all(),
+            db_sess.query(Topic).all(),
             key=lambda t: ("" if t.category is None else t.category.title, t.is_pinned, t.created_time),
             reverse=True
         ),
@@ -186,8 +186,6 @@ def edit_topic(id):
     # Сгенерируем список категорий, в которых пользователь может создать тему
     form.category.choices = [(None, "Без категории")] + \
                             [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
-    form.category.default = topic.category_id
-    form.process()
 
     if form.validate_on_submit():
         # Если была нажата кнопка "Удалить"
@@ -206,7 +204,7 @@ def edit_topic(id):
             else:
                 topic.title = form.title.data
                 topic.text = form.text.data
-                topic.category = form.category.data
+                topic.category_id = form.category.data
                 db_sess.commit()
 
                 return redirect(url_for("topic_content", id=id))
@@ -214,6 +212,7 @@ def edit_topic(id):
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.title.data = topic.title
         form.text.data = topic.text
+        form.category.process_data(topic.category_id)
         return render("edit_topic.html", title="Редактировать тему", form=form)
 
 
