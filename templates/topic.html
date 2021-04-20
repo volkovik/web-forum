@@ -7,7 +7,7 @@
         <!-- Описание темы -->
         <div class="list-group-item d-flex justify-content-between bg-light">
             <h3>{{ topic.title }}</h3>
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and (current_user.id == topic.author_id or current_user.is_admin()) %}
                 <div class="ms-1 dropdown align-self-center">
                     <span type="button" class="float-end link-secondary"
                           id="dropdownMenuButtonTopic" data-bs-toggle="dropdown"
@@ -20,17 +20,19 @@
                                 Редактировать
                             </a>
                         </li>
-                        <li>
-                            <form method="post">
-                                <button type="submit" name="button" value="pin" class="dropdown-item">
-                                    {% if topic.is_pinned %}
-                                        Открепить
-                                    {% else %}
-                                        Закрепить
-                                    {% endif %}
-                                </button>
-                            </form>
-                        </li>
+                        {% if current_user.is_admin() %}
+                            <li>
+                                <form method="post">
+                                    <button type="submit" name="button" value="pin" class="dropdown-item">
+                                        {% if topic.is_pinned %}
+                                            Открепить
+                                        {% else %}
+                                            Закрепить
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             {% endif %}

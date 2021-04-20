@@ -36,7 +36,9 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <div class="navbar-nav ms-auto">
                         {% if current_user.is_authenticated %}
-                            <a class="nav-link" href="{{ url_for("categories_list") }}">Категории</a>
+                            {% if current_user.is_admin() %}
+                                <a class="nav-link" href="{{ url_for("categories_list") }}">Категории</a>
+                            {% endif %}
                             <a class="nav-link" href="{{ url_for("create_topic") }}">Создать тему</a>
                             <div class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"

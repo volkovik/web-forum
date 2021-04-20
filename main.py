@@ -163,9 +163,7 @@ def create_topic():
         db_sess.add(topic)
         db_sess.commit()
 
-        return redirect(url_for(
-            "category_content", id="no_category" if form.category.data == "None" else form.category.data
-        ))
+        return redirect(url_for("topic_content", id=topic.id))
     else:
         return render("create_topic.html", title="Создать тему", form=form)
 

@@ -85,7 +85,7 @@
                     <p class="mb-1 text-break">{{ p }}</p>
                 {% endfor %}
             </div>
-            {% if comment_or_topic.__class__.__name__ == "Comment" and current_user.is_authenticated %}
+            {% if comment_or_topic.__class__.__name__ == "Comment" and (current_user.id == comment_or_topic.author_id or current_user.is_admin()) %}
                 <div class="dropdown ms-1">
                     <span type="button" class="float-end link-secondary mp-2"
                           id="dropdownMenuButtonTopic" data-bs-toggle="dropdown"
