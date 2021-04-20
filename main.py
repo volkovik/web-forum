@@ -180,6 +180,10 @@ def edit_topic(id):
     if not topic:
         abort(404, description="Темы с таким ID не существует")
 
+    # Проверяем, что автор комментария является текущим пользователем или является администратором
+    if current_user.id != topic.author_id and not current_user.is_admin():
+        abort(403, "У вас нет прав на редактирование этой темы")
+
     form = EditTopicForm()
     # Сгенерируем список категорий, в которых пользователь может создать тему
     form.category.choices = [(None, "Без категории")] + \
@@ -246,6 +250,10 @@ def edit_comment(id):
     if not comment:
         abort(404, description="Комментария с таким ID не существует")
 
+    # Проверяем, что автор комментария является текущим пользователем или является администратором
+    if current_user.id != comment.author_id and not current_user.is_admin():
+        abort(403, description="У вас нет прав на редактирование этого комментария")
+
     form = EditCommentForm()
 
     if form.validate_on_submit():
@@ -303,6 +311,10 @@ def category_content(id):
 @login_required
 def categories_list():
     """Страница со списком всех категорий на форуме"""
+    # Проверяем, что автор комментария является текущим пользователем или является администратором
+    if not current_user.is_admin():
+        abort(403, "У вас нет доступа к редактированию категорий")
+
     db_sess = db_session.create_session()
     categories = db_sess.query(Category).order_by("title").all()
     # Для показа кол-ва тем без категории
@@ -315,6 +327,10 @@ def categories_list():
 @login_required
 def create_category():
     """Страница с формой создания категории"""
+    # Проверяем, что автор комментария является текущим пользователем или является администратором
+    if not current_user.is_admin():
+        abort(403, "У вас нет доступа к редактированию категорий")
+
     db_sess = db_session.create_session()
 
     form = CategoryForm()
@@ -335,6 +351,10 @@ def create_category():
 @login_required
 def edit_category(id):
     """Страница с формой редактирования категории"""
+    # Проверяем, что автор комментария является текущим пользователем или является администратором
+    if not current_user.is_admin():
+        abort(403, "У вас нет доступа к редактированию категорий")
+
     db_sess = db_session.create_session()
     category = db_sess.query(Category).get(id)
 
