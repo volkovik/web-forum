@@ -400,6 +400,26 @@ def edit_category(id):
         return render("edit_category.html", title="Редактировать категорию", form=form)
 
 
+@app.route("/users", methods=["GET", "POST"])
+@login_required
+def users_list():
+    if not current_user.is_admin():
+        abort(403, "У вас нет доступа к списку пользователей")
+
+    db_sess = db_session.create_session()
+    users = db_sess.query(User).order_by("role").all()
+
+    if request.method == "POST":
+        if request.form["button"].startswith("admin"):
+            user = db_sess.query(User).get(int(request.form["button"].split("-")[-1]))
+            user.role = Role.admin if user.role == Role.user else Role.user
+            db_sess.commit()
+
+        return redirect(url_for("users_list"))
+    else:
+        return render("users_list.html", title="Пользователи", users=users)
+
+
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
     app.run()

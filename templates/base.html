@@ -37,6 +37,7 @@
                     <div class="navbar-nav ms-auto">
                         {% if current_user.is_authenticated %}
                             {% if current_user.is_admin() %}
+                                <a href="{{ url_for("users_list") }}" class="nav-link">Пользователи</a>
                                 <a class="nav-link" href="{{ url_for("categories_list") }}">Категории</a>
                             {% endif %}
                             <a class="nav-link" href="{{ url_for("create_topic") }}">Создать тему</a>
