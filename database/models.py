@@ -1,11 +1,18 @@
 import datetime
+import enum
 
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm, Boolean, Enum
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.session import SqlAlchemyBase
 from core.utilities import get_created_time, Pagination
+
+
+class Role(enum.Enum):
+    """Роль пользователя, доступность прав"""
+    admin = 1
+    user = 0
 
 
 # Модели базы данных
@@ -16,11 +23,15 @@ class User(SqlAlchemyBase, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
+    role = Column(Enum(Role), default=Role.user)
     hashed_password = Column(String, nullable=False)
     created_time = Column(DateTime, default=datetime.datetime.now)
 
     topics = orm.relation("Topic", back_populates="author")
     comments = orm.relation("Comment", back_populates="author")
+
+    def is_admin(self):
+        return self.role == Role.admin
 
     def set_password(self, password: str):
         """Поставить пароль"""
