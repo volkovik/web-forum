@@ -15,9 +15,22 @@
                         <i class="bi bi-three-dots"></i>
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTopic">
-                        <li><a href="{{ url_for("edit_topic", id=topic.id) }}" class="dropdown-item">
-                            Редактировать
-                        </a></li>
+                        <li>
+                            <a href="{{ url_for("edit_topic", id=topic.id) }}" class="dropdown-item">
+                                Редактировать
+                            </a>
+                        </li>
+                        <li>
+                            <form method="post">
+                                <button type="submit" name="button" value="pin" class="dropdown-item">
+                                    {% if topic.is_pinned %}
+                                        Открепить
+                                    {% else %}
+                                        Закрепить
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             {% endif %}

@@ -32,7 +32,8 @@ def index():
     # Группируем темы по категориям
     categories = itertools.groupby(
         sorted(
-            db_sess.query(Topic).all(), key=lambda t: ("" if t.category is None else t.category.title, t.created_time),
+            db_sess.query(Topic).order_by("is_pinned", "created_time").all(),
+            key=lambda t: ("" if t.category is None else t.category.title, t.is_pinned, t.created_time),
             reverse=True
         ),
         lambda t: t.category
@@ -121,17 +122,24 @@ def topic_content(id):
         # Переводим на последнию страницу с комментариями и ссылаемся на комментарий, оставленный пользователем
         return redirect(url_for("redirect_to_comment", id=comment.id))
     else:
-        # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
-        if topic:
-            # Распределение комментариев по страницам
-            page = request.args.get("page", 1, type=int)
-            pagination_comments = topic.get_comments_pagination()
+        # Зарос на закрепление темы в категории
+        if request.method == "POST" and request.form["button"] == "pin":
+            topic.is_pinned = not topic.is_pinned
+            db_sess.commit()
 
-            return render(
-                "topic.html", title=topic.title, topic=topic, comments=pagination_comments, page=page, form=form
-            )
+            return redirect(url_for("topic_content", id=topic.id))
         else:
-            abort(404, description="Темы с таким ID не существует")
+            # Если такой ID в базе данных имеется, то выдаёт страницу с комментариями из темы
+            if topic:
+                # Распределение комментариев по страницам
+                page = request.args.get("page", 1, type=int)
+                pagination_comments = topic.get_comments_pagination()
+
+                return render(
+                    "topic.html", title=topic.title, topic=topic, comments=pagination_comments, page=page, form=form
+                )
+            else:
+                abort(404, description="Темы с таким ID не существует")
 
 
 @app.route("/create_topic", methods=["GET", "POST"])
@@ -155,7 +163,9 @@ def create_topic():
         db_sess.add(topic)
         db_sess.commit()
 
-        return redirect("/")
+        return redirect(url_for(
+            "category_content", id="no_category" if form.category.data == "None" else form.category.data
+        ))
     else:
         return render("create_topic.html", title="Создать тему", form=form)
 

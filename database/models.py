@@ -1,7 +1,7 @@
 import datetime
 
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, orm, Boolean
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.session import SqlAlchemyBase
@@ -50,7 +50,7 @@ class Category(SqlAlchemyBase):
 
         :arg step: количество тем на странице
         """
-        return Pagination(sorted(self.topics, key=lambda t: t.created_time, reverse=True), step)
+        return Pagination(sorted(self.topics, key=lambda t: (t.is_pinned, t.created_time), reverse=True), step)
 
 
 class Topic(SqlAlchemyBase):
@@ -62,6 +62,7 @@ class Topic(SqlAlchemyBase):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
     title = Column(String)
     text = Column(String)
+    is_pinned = Column(Boolean, default=False)
     created_time = Column(DateTime, default=datetime.datetime.now)
 
     author = orm.relation("User")

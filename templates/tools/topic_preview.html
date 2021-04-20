@@ -3,6 +3,9 @@
    class="list-group-item list-group-item-action">
     <div class="d-flex justify-content-between">
         <h6 class="mb-1">
+            {% if topic.is_pinned %}
+                <i class="bi bi-pin-angle-fill"></i>
+            {% endif %}
             {# Сократим заголовок, чтобы не заполнять очень много места #}
             {% if topic.title.split().__len__() > 12 %}
                 {{ " ".join(topic.title.split()[:12]) }}...
