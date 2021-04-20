@@ -52,6 +52,7 @@ class Category(SqlAlchemyBase):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, unique=True)
+    is_locked = Column(Boolean, default=False)
 
     topics = orm.relation("Topic", back_populates="category")
 
@@ -74,6 +75,7 @@ class Topic(SqlAlchemyBase):
     title = Column(String)
     text = Column(String)
     is_pinned = Column(Boolean, default=False)
+    is_locked = Column(Boolean, default=False)
     created_time = Column(DateTime, default=datetime.datetime.now)
 
     author = orm.relation("User")

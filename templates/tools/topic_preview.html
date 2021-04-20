@@ -6,6 +6,9 @@
             {% if topic.is_pinned %}
                 <i class="bi bi-pin-angle-fill"></i>
             {% endif %}
+            {% if topic.is_locked %}
+                <i class="bi bi-lock-fill"></i>
+            {% endif %}
             {# Сократим заголовок, чтобы не заполнять очень много места #}
             {% if topic.title.split().__len__() > 12 %}
                 {{ " ".join(topic.title.split()[:12]) }}...
@@ -13,7 +16,7 @@
                 {{ topic.title }}
             {% endif %}
         </h6>
-        <small class="text-muted text-end">{{ topic.get_created_time() }}</small>
+        <small class="text-muted text-end">{{ topic.get_created_time() }} <i class="bi bi-clock-fill"></i></small>
     </div>
     <small class="mb-1">
         {# И обязательно сократим описание темы #}
@@ -24,13 +27,14 @@
         {% endif %}
     </small>
     <div class="d-flex justify-content-between text-muted">
-        <small>{{ topic.author.username }}</small>
+        <small><i class="bi bi-person-fill"></i> {{ topic.author.username }}</small>
         <small>
             {% if topic.comments | length == 0 %}
                 Нет ответов
             {% else %}
                 {{ make_agree_with_number(topic.comments | length, "ответ") }}
             {% endif %}
+            <i class="bi bi-reply-fill"></i>
         </small>
     </div>
 </a>

@@ -123,8 +123,11 @@ def topic_content(id):
         return redirect(url_for("redirect_to_comment", id=comment.id))
     else:
         # Зарос на закрепление темы в категории
-        if request.method == "POST" and request.form["button"] == "pin":
-            topic.is_pinned = not topic.is_pinned
+        if request.method == "POST":
+            if request.form["button"] == "pin":
+                topic.is_pinned = not topic.is_pinned
+            elif request.form["button"] == "lock":
+                topic.is_locked = not topic.is_locked
             db_sess.commit()
 
             return redirect(url_for("topic_content", id=topic.id))
@@ -150,14 +153,19 @@ def create_topic():
 
     form = TopicForm()
     # Сгенерируем список категорий, в которых пользователь может создать тему
-    form.category.choices = [(None, "Без категории")] + \
-                            [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
+    if current_user.is_admin():
+        form.category.choices = [(None, "Без категории")] + \
+                                [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
+    else:
+        form.category.choices = [(None, "Без категории")] + \
+            [(c.id, c.title) for c in db_sess.query(Category).filter(Category.is_locked == False).order_by("title")]
 
     if form.validate_on_submit():
         topic = Topic(
             author_id=current_user.id,
             title=form.title.data,
             text=form.text.data,
+            is_locked=form.locked.data,
             category_id=None if form.category.data == "None" else form.category.data
         )
         db_sess.add(topic)
@@ -179,13 +187,17 @@ def edit_topic(id):
         abort(404, description="Темы с таким ID не существует")
 
     # Проверяем, что автор комментария является текущим пользователем или является администратором
-    if current_user.id != topic.author_id and not current_user.is_admin():
+    if (current_user.id != topic.author_id or topic.is_locked) and not current_user.is_admin():
         abort(403, "У вас нет прав на редактирование этой темы")
 
     form = EditTopicForm()
     # Сгенерируем список категорий, в которых пользователь может создать тему
-    form.category.choices = [(None, "Без категории")] + \
-                            [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
+    if current_user.is_admin():
+        form.category.choices = [(None, "Без категории")] + \
+                                [(c.id, c.title) for c in db_sess.query(Category).order_by("title")]
+    else:
+        form.category.choices = [(None, "Без категории")] + \
+            [(c.id, c.title) for c in db_sess.query(Category).filter(Category.is_locked == False).order_by("title")]
 
     if form.validate_on_submit():
         # Если была нажата кнопка "Удалить"
@@ -198,13 +210,15 @@ def edit_topic(id):
         else:
             form.category.data = None if form.category.data == "None" else form.category.data
 
-            if topic.title == form.title.data and topic.text == form.text.data and topic.category == form.category.data:
+            if topic.title == form.title.data and topic.text == form.text.data and topic.category == \
+                    form.category.data and topic.is_locked == form.category.data:
                 return render("edit_topic.html", title="Редактировать тему", form=form,
                               error="Данные формы совпадают с исходными данными")
             else:
                 topic.title = form.title.data
                 topic.text = form.text.data
                 topic.category_id = form.category.data
+                topic.is_locked = form.locked.data
                 db_sess.commit()
 
                 return redirect(url_for("topic_content", id=id))
@@ -212,6 +226,7 @@ def edit_topic(id):
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.title.data = topic.title
         form.text.data = topic.text
+        form.locked.data = topic.is_locked
         form.category.process_data(topic.category_id)
         return render("edit_topic.html", title="Редактировать тему", form=form)
 
@@ -248,7 +263,7 @@ def edit_comment(id):
         abort(404, description="Комментария с таким ID не существует")
 
     # Проверяем, что автор комментария является текущим пользователем или является администратором
-    if current_user.id != comment.author_id and not current_user.is_admin():
+    if (current_user.id != comment.author_id or comment.topic.is_locked) and not current_user.is_admin():
         abort(403, description="У вас нет прав на редактирование этого комментария")
 
     form = EditCommentForm()
@@ -334,7 +349,8 @@ def create_category():
 
     if form.validate_on_submit():
         category = Category(
-            title=form.title.data
+            title=form.title.data,
+            is_locked=form.locked.data
         )
         db_sess.add(category)
         db_sess.commit()
@@ -369,11 +385,12 @@ def edit_category(id):
             return redirect(url_for("categories_list"))
         # В остальных случаях считаем, что была нажата кнопка "Сохранить"
         else:
-            if category.title == form.title.data:
+            if category.title == form.title.data and category.is_locked == form.locked.data:
                 return render("edit_category.html", title="Редактировать категорию", form=form,
                               error="Данные формы совпадают с исходными данными")
             else:
                 category.title = form.title.data
+                category.is_locked = form.locked.data
                 db_sess.commit()
 
                 return redirect(url_for("categories_list"))

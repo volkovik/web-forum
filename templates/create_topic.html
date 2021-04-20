@@ -9,6 +9,9 @@
         {{ input(form.title) }}
         {{ input(form.text) }}
         {{ input(form.category) }}
+        {% if current_user.is_admin() %}
+            {{ input(form.locked) }}
+        {% endif %}
         <p>{{ form.submit(type="submit", class="btn btn-dark float-end") }}</p>
     </form>
 {% endblock %}

@@ -15,6 +15,9 @@
         {{ input(form.title) }}
         {{ input(form.text) }}
         {{ input(form.category) }}
+        {% if current_user.is_admin() %}
+            {{ input(form.locked) }}
+        {% endif %}
         <div class="d-flex justify-content-between">
             {{ form.submit(type="submit", class="btn btn-dark") }}
             {{ button_delete_with_alert("Удаление темы", "Вы действительно хотите удалить данную тему?", form.delete) }}

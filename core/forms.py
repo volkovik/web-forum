@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired as DataRequiredWtf, ValidationError, EqualTo, Length
 
@@ -74,6 +74,7 @@ class TopicForm(FlaskForm):
         validators=[DataRequired(), Length(-1, 10240, "Текст не должен превышать более 10240 символов")]
     )
     category = SelectField("Категория")
+    locked = BooleanField("Закрытый", default=False)
     submit = SubmitField("Создать")
 
 
@@ -89,6 +90,7 @@ class CategoryForm(FlaskForm):
         "Заголовок",
         validators=[DataRequired(), Length(-1, 128, "Заголовок не должен превышать более 128 символов")]
     )
+    locked = BooleanField("Закрытый", default=False)
     submit = SubmitField("Создать")
 
 

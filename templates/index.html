@@ -10,6 +10,9 @@
                 {% set topic_id = category.id %}
 
                 <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
+                    {% if category.is_locked %}
+                        <i class="bi bi-lock-fill"></i>
+                    {% endif %}
                     <b>{{ category.title }}</b>
                 </a>
             {% else %}
