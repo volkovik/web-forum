@@ -107,10 +107,10 @@
     </div>
 {%- endmacro %}
 
-{% macro input(field) -%}
+{% macro input(field, type="") -%}
     <p>
         <span class="text-muted">{{ field.label }}</span>
-        {{ field(class="form-control") }}
+        {{ field(class="form-control", type=type) }}
         {% for error in field.errors %}
             <div class="alert alert-danger" role="alert">
                 {{ error }}
