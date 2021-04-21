@@ -48,8 +48,13 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                                     <li>
-                                        <a href="{{ url_for("user_settings") }}" class="dropdown-item">
-                                            <i class="bi bi-gear-fill"></i> Настройки
+                                        <a href="{{ url_for("edit_profile") }}" class="dropdown-item">
+                                            <i class="bi bi-gear-fill"></i> Редактировать профиль
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for("edit_password") }}" class="dropdown-item">
+                                            <i class="bi bi-key-fill"></i> Изменить пароль
                                         </a>
                                     </li>
                                     <li>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% from "tools/macros.html" import input %}
+
+{% block content %}
+    <h1 class="mb-3">{{ title }}</h1>
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ input(form.username, disabled=current_user.username == "admin") }}
+        {{ input(form.email, type="email") }}
+        <p>{{ form.submit(type="submit", class="btn btn-dark") }}</p>
+    </form>
+{% endblock %}

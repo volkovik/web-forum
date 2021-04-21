@@ -26,6 +26,11 @@ def is_email_unique(form, field):
         raise ValidationError("Пользователь с такой почтой уже существует")
 
 
+def old_password_equals_new_password(form, field):
+    if form.old_password.data == field.data:
+        raise ValidationError("Пароль не должен совпадать с текущим")
+
+
 class RegistrationForm(FlaskForm):
     """Форма регистрации"""
     username = StringField("Логин", validators=[DataRequired(), is_username_unique])
@@ -49,7 +54,11 @@ class EditUserInfoForm(FlaskForm):
 
 class EditUserPassword(FlaskForm):
     old_password = PasswordField("Старый пароль")
-    password = PasswordField("Новый пароль", validators=[DataRequired()])
+    password = PasswordField(
+        "Новый пароль",
+        validators=[DataRequired(), old_password_equals_new_password,
+                    Length(8, -1, "Пароль должен содержать не менее 8 символов")]
+    )
     password_again = PasswordField(
         "Повторите пароль",
         validators=[DataRequired(), EqualTo("password", "Пароли должны совпадать")]

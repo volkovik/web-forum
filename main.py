@@ -433,45 +433,72 @@ def users_list():
         return render("users_list.html", title="Пользователи", users=users)
 
 
-@app.route("/settings", methods=["GET", "POST"])
+@app.route("/edit_profile", methods=["GET", "POST"])
 @login_required
-def user_settings():
+def edit_profile():
+    """Страница для изменения логина и эл. почты пользователем"""
     db_sess = db_session.create_session()
     user = db_sess.query(User).get(current_user.id)
 
-    form_info = EditUserInfoForm()
-    form_password = EditUserPassword()
+    form = EditUserInfoForm()
 
     render_params = {
-        "template_name_or_list": "user_settings.html",
-        "title": "Ваш аккаунт",
-        "accordion": 1,
-        "form_info": form_info,
-        "form_password": form_password
+        "template_name_or_list": "edit_profile.html",
+        "title": "Редактирование профиля",
+        "form": form
     }
 
-    if form_info.submit.data and form_info.validate():
-        if db_sess.query(User).filter(User.id != user.id, User.username == form_info.username.data).all():
+    if user.username == "admin":
+        form.username.data = user.username
+
+    if form.validate_on_submit():
+        if db_sess.query(User).filter(User.id != user.id, User.username == form.username.data).all():
             return render(**render_params, error="Пользователь с таким логином уже существует")
-        elif db_sess.query(User).filter(User.id != user.id, User.email == form_info.email.data).all():
-            return render(**render_params, error="Пользователь с таким эл. почтой уже существует")
+        elif db_sess.query(User).filter(User.id != user.id, User.email == form.email.data).all():
+            return render(**render_params, error="Пользователь с такой эл. почтой уже существует")
+        elif form.username.data == user.username and form.email.data == user.email:
+            return render(**render_params, error="Данные формы совпадают с исходными данными")
 
-        user.username = form_info.username.data
-        user.email = form_info.email.data
+        if not user.username == "admin":
+            user.username = form.username.data
+
+        user.email = form.email.data
         db_sess.commit()
 
-        return redirect(url_for("user_settings"))
-    elif form_password.submit.data and form_password.validate():
-        if user.check_password(form_password.old_password.data):
-            return render(**render_params, error="Неправильный пароль", accordion=2)
-
-        user.set_password(form_password.password.data)
-        db_sess.commit()
-
-        return redirect(url_for("user_settings"))
+        return redirect(url_for("edit_profile"))
     else:
-        form_info.username.data = user.username
-        form_info.email.data = user.email
+        form.username.data = user.username
+        form.email.data = user.email
+
+        return render(**render_params)
+
+
+@app.route("/edit_password", methods=["GET", "POST"])
+@login_required
+def edit_password():
+    """Страница для изменения пароля от аккаунта пользователем"""
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).get(current_user.id)
+
+    form = EditUserPassword()
+
+    render_params = {
+        "template_name_or_list": "edit_password.html",
+        "title": "Редактирование пароля",
+        "form": form
+    }
+
+    if form.validate_on_submit():
+        if not user.check_password(form.old_password.data):
+            return render(**render_params, error="Неправильный пароль")
+
+        user.set_password(form.password.data)
+        db_sess.commit()
+
+        print(user.check_password("qwer1234"))
+
+        return redirect(url_for("index"))
+    else:
         return render(**render_params)
 
 
