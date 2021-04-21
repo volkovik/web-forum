@@ -406,6 +406,7 @@ def edit_category(id):
     else:
         # Впишем значение из базы данных, чтобы пользователю упростить редактирование
         form.title.data = category.title
+        form.locked.data = category.is_locked
         return render("edit_category.html", title="Редактировать категорию", form=form)
 
 
@@ -452,6 +453,7 @@ def edit_profile():
         form.username.data = user.username
 
     if form.validate_on_submit():
+        # Делаем проверку данных
         if db_sess.query(User).filter(User.id != user.id, User.username == form.username.data).all():
             return render(**render_params, error="Пользователь с таким логином уже существует")
         elif db_sess.query(User).filter(User.id != user.id, User.email == form.email.data).all():
@@ -459,6 +461,7 @@ def edit_profile():
         elif form.username.data == user.username and form.email.data == user.email:
             return render(**render_params, error="Данные формы совпадают с исходными данными")
 
+        # Если администратор не имеет какого-либо понятия
         if not user.username == "admin":
             user.username = form.username.data
 
@@ -492,10 +495,9 @@ def edit_password():
         if not user.check_password(form.old_password.data):
             return render(**render_params, error="Неправильный пароль")
 
+        # Изменяем пароль
         user.set_password(form.password.data)
         db_sess.commit()
-
-        print(user.check_password("qwer1234"))
 
         return redirect(url_for("index"))
     else:
