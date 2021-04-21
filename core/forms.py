@@ -41,6 +41,22 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField("Зарегистрироваться")
 
 
+class EditUserInfoForm(FlaskForm):
+    username = StringField("Логин", validators=[DataRequired()])
+    email = EmailField("Эл. почта", validators=[DataRequired()])
+    submit = SubmitField("Сохранить")
+
+
+class EditUserPassword(FlaskForm):
+    old_password = PasswordField("Старый пароль")
+    password = PasswordField("Новый пароль", validators=[DataRequired()])
+    password_again = PasswordField(
+        "Повторите пароль",
+        validators=[DataRequired(), EqualTo("password", "Пароли должны совпадать")]
+    )
+    submit = SubmitField("Изменить")
+
+
 class LoginForm(FlaskForm):
     """Форма авторизации"""
     username = StringField("Логин", validators=[DataRequired()])

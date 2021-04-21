@@ -47,7 +47,16 @@
                                     {{ current_user.username }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="{{ url_for("logout") }}">Выйти</a></li>
+                                    <li>
+                                        <a href="{{ url_for("user_settings") }}" class="dropdown-item">
+                                            <i class="bi bi-gear-fill"></i> Настройки
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for("logout") }}">
+                                            <i class="bi bi-box-arrow-right"></i> Выйти
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         {% else %}

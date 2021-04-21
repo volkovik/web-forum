@@ -433,6 +433,48 @@ def users_list():
         return render("users_list.html", title="Пользователи", users=users)
 
 
+@app.route("/settings", methods=["GET", "POST"])
+@login_required
+def user_settings():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).get(current_user.id)
+
+    form_info = EditUserInfoForm()
+    form_password = EditUserPassword()
+
+    render_params = {
+        "template_name_or_list": "user_settings.html",
+        "title": "Ваш аккаунт",
+        "accordion": 1,
+        "form_info": form_info,
+        "form_password": form_password
+    }
+
+    if form_info.submit.data and form_info.validate():
+        if db_sess.query(User).filter(User.id != user.id, User.username == form_info.username.data).all():
+            return render(**render_params, error="Пользователь с таким логином уже существует")
+        elif db_sess.query(User).filter(User.id != user.id, User.email == form_info.email.data).all():
+            return render(**render_params, error="Пользователь с таким эл. почтой уже существует")
+
+        user.username = form_info.username.data
+        user.email = form_info.email.data
+        db_sess.commit()
+
+        return redirect(url_for("user_settings"))
+    elif form_password.submit.data and form_password.validate():
+        if user.check_password(form_password.old_password.data):
+            return render(**render_params, error="Неправильный пароль", accordion=2)
+
+        user.set_password(form_password.password.data)
+        db_sess.commit()
+
+        return redirect(url_for("user_settings"))
+    else:
+        form_info.username.data = user.username
+        form_info.email.data = user.email
+        return render(**render_params)
+
+
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
 
