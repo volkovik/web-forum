@@ -27,27 +27,39 @@
                     {% endif %}
                 </td>
                 <td>
-                    <div class="me-1 dropdown align-self-center">
-                            <span type="button" class="float-end link-secondary"
-                                  id="dropdownMenuButtonTopic" data-bs-toggle="dropdown"
-                                  aria-expanded="false">
-                                <i class="bi bi-three-dots"></i>
-                            </span>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTopic">
-                            <li>
-                                <form method="post">
-                                    <button type="submit" name="button" value="admin-{{ user.id }}"
-                                            class="dropdown-item">
-                                        {% if user.is_admin() %}
-                                            <i class="bi bi-person-x-fill"></i> Удалить из администраторов
-                                        {% else %}
-                                            <i class="bi bi-person-plus-fill"></i> Добавить в администраторы
-                                        {% endif %}
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+                    {% if (current_user.is_admin() and not user.is_admin()) or (current_user.username == "admin" and user.username != "admin") %}
+                        <div class="me-1 dropdown align-self-center">
+                                <span type="button" class="float-end link-secondary"
+                                      id="dropdownMenuButtonTopic" data-bs-toggle="dropdown"
+                                      aria-expanded="false">
+                                    <i class="bi bi-three-dots"></i>
+                                </span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTopic">
+                                {% if current_user.username == "admin" %}
+                                    <li>
+                                        <form method="post">
+                                            <button type="submit" name="button" value="admin-{{ user.id }}"
+                                                    class="dropdown-item">
+                                                {% if user.is_admin() %}
+                                                    <i class="bi bi-person-x-fill"></i> Удалить из администраторов
+                                                {% else %}
+                                                    <i class="bi bi-person-plus-fill"></i> Добавить в администраторы
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <form method="post">
+                                        <button type="submit" name="button" value="delete-{{ user.id }}"
+                                                class="dropdown-item">
+                                            <i class="bi bi-trash-fill"></i> Удалить
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

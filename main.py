@@ -1,5 +1,7 @@
 import itertools
 import os
+import random
+from string import ascii_letters, digits, punctuation
 
 from dotenv import load_dotenv
 from flask import Flask, redirect, abort, url_for, request
@@ -14,6 +16,13 @@ load_dotenv()  # загрузка переменных
 
 app = Flask("Internet forum")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["HEAD_ADMIN_PASSWORD"] = os.environ.get("HEAD_ADMIN_PASSWORD")
+
+# Если пароля нет в виртуальном окружении, то пароль будет сгенерирован
+if not app.config["HEAD_ADMIN_PASSWORD"]:
+    app.config["HEAD_ADMIN_PASSWORD"] = "".join(
+        [random.choice(ascii_letters + digits + punctuation) for _ in range(16)]
+    )
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -413,7 +422,11 @@ def users_list():
         if request.form["button"].startswith("admin"):
             user = db_sess.query(User).get(int(request.form["button"].split("-")[-1]))
             user.role = Role.admin if user.role == Role.user else Role.user
-            db_sess.commit()
+        elif request.form["button"].startswith("delete"):
+            user = db_sess.query(User).get(int(request.form["button"].split("-")[-1]))
+            db_sess.delete(user)
+
+        db_sess.commit()
 
         return redirect(url_for("users_list"))
     else:
@@ -422,6 +435,16 @@ def users_list():
 
 def main():
     db_session.global_init(os.environ.get("DATABASE_URL"))
+
+    # Проверка на то, совпадает ли пароль с паролем заданном в проекте
+    db_sess = db_session.create_session()
+    head_admin_user = db_sess.query(User).filter(User.username == "admin").first()
+    if head_admin_user and not head_admin_user.check_password(app.config["HEAD_ADMIN_PASSWORD"]):
+        head_admin_user.set_password(app.config["HEAD_ADMIN_PASSWORD"])
+        db_sess.commit()
+
+        print(f"Пароль от аккаунта главного администратора был изменён: {app.config['HEAD_ADMIN_PASSWORD']}")
+
     app.run()
 
 
