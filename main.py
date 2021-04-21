@@ -508,11 +508,22 @@ def main():
     # Проверка на то, совпадает ли пароль с паролем заданном в проекте
     db_sess = db_session.create_session()
     head_admin_user = db_sess.query(User).filter(User.username == "admin").first()
+
+    if not head_admin_user:
+        head_admin_user = User(
+            username="admin",
+            role=Role.admin,
+            email="admin@example.com",
+        )
+        head_admin_user.set_password(app.config["HEAD_ADMIN_PASSWORD"])
+        db_sess.add(head_admin_user)
+        db_sess.commit()
+
     if head_admin_user and not head_admin_user.check_password(app.config["HEAD_ADMIN_PASSWORD"]):
         head_admin_user.set_password(app.config["HEAD_ADMIN_PASSWORD"])
         db_sess.commit()
 
-        print(f"Пароль от аккаунта главного администратора был изменён: {app.config['HEAD_ADMIN_PASSWORD']}")
+    print(f"Пароль от аккаунта главного администратора: {app.config['HEAD_ADMIN_PASSWORD']}")
 
     app.run()
 
