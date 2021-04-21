@@ -32,7 +32,13 @@
             {% endif %}
         </div>
         <div class="d-flex justify-content-between">
-            <small class="text-muted"><i class="bi bi-person-fill"></i> {{ comment_or_topic.author.username }}</small>
+            <small class="text-muted">
+                <i class="bi bi-person-fill"></i>
+                {% if topic.author %}
+                    {{ comment_or_topic.author.username }}
+                {% else %}
+                    удалён
+                {% endif %}</small>
             <small class="text-muted">{{ comment_or_topic.get_created_time() }} <i class="bi bi-clock-fill"></i></small>
         </div>
     </div>

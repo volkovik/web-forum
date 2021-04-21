@@ -27,7 +27,14 @@
         {% endif %}
     </small>
     <div class="d-flex justify-content-between text-muted">
-        <small><i class="bi bi-person-fill"></i> {{ topic.author.username }}</small>
+        <small>
+            <i class="bi bi-person-fill"></i>
+            {% if topic.author %}
+                {{ topic.author.username }}
+            {% else %}
+                удалён
+            {% endif %}
+        </small>
         <small>
             {% if topic.comments | length == 0 %}
                 Нет ответов
