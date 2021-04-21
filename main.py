@@ -211,6 +211,9 @@ def edit_topic(id):
     if form.validate_on_submit():
         # Если была нажата кнопка "Удалить"
         if form.delete.data:
+            for comment in topic.comments:
+                db_sess.delete(comment)
+
             db_sess.delete(topic)
             db_sess.commit()
 
