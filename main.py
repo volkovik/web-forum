@@ -39,14 +39,19 @@ def index():
     """Главная страница форума. Показываются доступные темы"""
     db_sess = db_session.create_session()
     # Группируем темы по категориям
-    categories = itertools.groupby(
-        sorted(
-            db_sess.query(Topic).all(),
-            key=lambda t: ("" if t.category is None else t.category.title, t.is_pinned, t.created_time),
-            reverse=True
-        ),
-        lambda t: t.category
-    )
+    topics = db_sess.query(Topic).all()
+
+    if topics:
+        categories = itertools.groupby(
+            sorted(
+                topics,
+                key=lambda t: ("" if t.category is None else t.category.title, t.is_pinned, t.created_time),
+                reverse=True
+            ),
+            lambda t: t.category
+        )
+    else:
+        categories = None
 
     return render("index.html", categories=categories, title="Темы")
 

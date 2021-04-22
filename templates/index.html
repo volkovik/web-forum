@@ -3,35 +3,39 @@
 {% block content %}
     {# Страница со всеми категориями и превью их содержимого #}
     <h1 class="mb-4">{{ title }}</h1>
-    {% for category, topics in categories %}
-        {% set topics = topics | list %}
-        <div class="list-group mb-4">
-            {# Определяем название категории #}
-            {% if category %}
-                {% set topic_id = category.id %}
+    {% if categories %}
+        {% for category, topics in categories %}
+            {% set topics = topics | list %}
+            <div class="list-group mb-4">
+                {# Определяем название категории #}
+                {% if category %}
+                    {% set topic_id = category.id %}
 
-                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
-                    {% if category.is_locked %}
-                        <i class="bi bi-lock-fill"></i>
-                    {% endif %}
-                    <b>{{ category.title }}</b>
-                </a>
-            {% else %}
-                {% set topic_id = "no_category" %}
+                    <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
+                        {% if category.is_locked %}
+                            <i class="bi bi-lock-fill"></i>
+                        {% endif %}
+                        <b>{{ category.title }}</b>
+                    </a>
+                {% else %}
+                    {% set topic_id = "no_category" %}
 
-                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
-                    <b>Без категории</b>
-                </a>
-            {% endif %}
-            {% for topic in topics[:3] %}
-                {% include "tools/topic_preview.html" %}
-            {% endfor %}
-            {# Если в категории больше 3-х тем, то проинформировать пользователя, сколько тем было скрыто #}
-            {% if topics | length > 3 %}
-                <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item link-secondary">
-                    <small>Показать ещё {{ make_agree_with_number(topics[3:] | length, "тема") }}</small>
-                </a>
-            {% endif %}
-        </div>
-    {% endfor %}
+                    <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item bg-light">
+                        <b>Без категории</b>
+                    </a>
+                {% endif %}
+                {% for topic in topics[:3] %}
+                    {% include "tools/topic_preview.html" %}
+                {% endfor %}
+                {# Если в категории больше 3-х тем, то проинформировать пользователя, сколько тем было скрыто #}
+                {% if topics | length > 3 %}
+                    <a href="{{ url_for("category_content", id=topic_id) }}" class="list-group-item link-secondary">
+                        <small>Показать ещё {{ make_agree_with_number(topics[3:] | length, "тема") }}</small>
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <h5>На форуме ещё не было создано ни одной темы</h5>
+    {% endif %}
 {% endblock %}
