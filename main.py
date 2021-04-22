@@ -48,7 +48,7 @@ def index():
         lambda t: t.category
     )
 
-    return render("index.html", categories=categories)
+    return render("index.html", categories=categories, title="Темы")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -344,7 +344,8 @@ def categories_list():
     # Для показа кол-ва тем без категории
     no_category_length = len(db_sess.query(Topic).filter(Topic.category == None).all())
 
-    return render("categories_list.html", categories=categories, no_category_length=no_category_length)
+    return render("categories_list.html", categories=categories, no_category_length=no_category_length,
+                  title="Категории")
 
 
 @app.route("/category/create", methods=["GET", "POST"])

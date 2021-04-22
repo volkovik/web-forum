@@ -3,6 +3,7 @@
    class="list-group-item list-group-item-action">
     <div class="d-flex justify-content-between">
         <h6 class="mb-1">
+            {# Показывать иконку кнопки, если тема закреплена #}
             {% if topic.is_pinned %}
                 <i class="bi bi-pin-angle-fill"></i>
             {% endif %}
@@ -29,6 +30,7 @@
     <div class="d-flex justify-content-between text-muted">
         <small>
             <i class="bi bi-person-fill"></i>
+            {# Если автор темы не найден, то вывести в качестве имени "удалён" #}
             {% if topic.author %}
                 {{ topic.author.username }}
             {% else %}
@@ -36,6 +38,7 @@
             {% endif %}
         </small>
         <small>
+            {# Количество комментариев в теме #}
             {% if topic.comments | length == 0 %}
                 Нет ответов
             {% else %}

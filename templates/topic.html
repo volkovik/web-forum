@@ -46,17 +46,20 @@
 
 {% block content %}
     <div class="list-group mb-4">
-        <!-- Описание темы -->
+        {# Описание темы #}
         <div class="list-group-item d-flex justify-content-between bg-light">
             <h3>
+                {# Показывать иконку кнопки, если темы закреплена #}
                 {% if topic.is_pinned %}
                     <i class="bi bi-pin-angle-fill"></i>
                 {% endif %}
+                {# Показывать иконку замка, если тема закрыта #}
                 {% if topic.is_locked %}
                     <i class="bi bi-lock-fill"></i>
                 {% endif %}
                 {{ topic.title }}
             </h3>
+            {# Дополнительные параметры для темы, взависимости от роли пользователя, показываются разные действия #}
             {% if current_user.is_authenticated and
             ((current_user.id == topic.author_id and not topic.is_locked) or current_user.is_admin()) %}
                 <div class="ms-1 dropdown align-self-center">
@@ -99,15 +102,16 @@
                 </div>
             {% endif %}
         </div>
+        {# Если мы на первой страницы темы, то показать описание #}
         {% if page == 1 %}
             {{ render_comment(topic, current_user) }}
         {% endif %}
-        <!-- Комментарии к теме -->
+        {# Комментарии к теме #}
         {% for comment in comments.get_page(page) %}
             {{ render_comment(comment, current_user) }}
         {% endfor %}
     </div>
-    <!-- Добавление своего комментария в тему -->
+   {# Форма добавления комментария в тему #}
     {% if current_user.is_authenticated %}
         {% if current_user.is_admin() or topic.is_locked == False %}
             <p>
@@ -141,6 +145,6 @@
             </div>
         {% endif %}
     {% endif %}
-    <!-- Навигация по страницам темы -->
+    {# Навигация по страницам с комментариями #}
     {{ create_pagination(comments, page, topic.id, "topic_content") }}
 {% endblock %}

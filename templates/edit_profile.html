@@ -3,7 +3,9 @@
 {% from "tools/macros.html" import input %}
 
 {% block content %}
+    {# Форма редактирования логина и эл. почты #}
     <h1 class="mb-3">{{ title }}</h1>
+    {# Ошибки формы #}
     {% if error %}
         <div class="alert alert-danger">
             {{ error }}

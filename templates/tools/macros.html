@@ -73,6 +73,13 @@
 {%- endmacro %}
 
 {% macro input(field, type="", disabled=False) -%}
+    {#
+    Создание поля ввода
+
+    field - поле ввода
+    type - тип поля (пароль, почта и т.д.)
+    disabled - поле недоступно
+    #}
     <fieldset {% if disabled %}disabled{% endif %}>
         <p>
             {% if field.type == "BooleanField" %}
@@ -94,6 +101,13 @@
 {%- endmacro %}
 
 {% macro button_delete_with_alert(title, description, field) %}
+    {#
+    Создание кнопки удаление с предупреждением
+
+    title - заголовок
+    description - описание
+    field - кнопка submit/delete
+    #}
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
         Удалить
     </button>

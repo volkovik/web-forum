@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {# Заголовок и кнопка для добавления категории #}
     <div class="d-flex justify-content-between">
-        <h3 class="mb-3">Категории</h3>
+        <h3 class="mb-3">{{ title }}</h3>
         <a href="{{ url_for("create_category") }}" class="btn btn-sm btn-dark align-self-center">Создать</a>
     </div>
+    {# Список категорий с кнопкой редактирования #}
     <div class="list-group">
         {% for category in categories %}
             <div class="list-group-item d-flex justify-content-between">

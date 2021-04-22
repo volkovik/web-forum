@@ -3,7 +3,8 @@
 {% from "tools/macros.html" import input %}
 
 {% block content %}
-    <h3>Регистрация</h3>
+    {# Форма регистрации #}
+    <h3>{{ title }}</h3>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         {{ input(form.username) }}

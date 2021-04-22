@@ -3,7 +3,10 @@
 {% from "tools/macros.html" import create_pagination %}
 
 {% block content %}
+    {# Таблица с пользователями на форуме #}
+    <h1 class="mb-3">{{ title }}</h1>
     <table class="table border-start border-end">
+        {# Названия столбиков #}
         <thead class="table-dark">
         <tr>
             <th scope="col">ID</th>
@@ -14,7 +17,9 @@
         </tr>
         </thead>
         <tbody>
+        {# Вывод данных пользователей #}
         {% for user in users %}
+            {# Если пользователь является админом, то он будет выделяться цветом и показываться в самом вверху таблицы #}
             <tr class="{% if user.is_admin() %}table-success{% endif %}">
                 <th scope="row">{{ user.id }}</th>
                 <td>{{ user.username }}</td>
@@ -26,6 +31,9 @@
                         Нет
                     {% endif %}
                 </td>
+                {# Дополнительные действия с пользователями #}
+                {# Администраторы могут удалять пользователей, но не администраторов #}
+                {# Главный администратор может управлять администраторами и удалять пользователей с администратором #}
                 <td>
                     {% if (current_user.is_admin() and not user.is_admin()) or (current_user.username == "admin" and user.username != "admin") %}
                         <div class="me-1 dropdown align-self-center">

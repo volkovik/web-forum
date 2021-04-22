@@ -3,18 +3,18 @@
 {% from "tools/macros.html" import input %}
 
 {% block content %}
-    <h3>Авторизация</h3>
+    {# Форма авторизации #}
+    <h3>{{ title }}</h3>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         {{ input(form.username) }}
         {{ input(form.password, "password") }}
-        <!-- Сообщение об ошибке -->
+        {# Ошибки формы #}
         {% if error %}
             <div class="alert alert-danger">
                 {{ error }}
             </div>
         {% endif %}
-        <!-- Кнопка входа -->
         <p>{{ form.submit(type="submit", class="btn btn-dark float-end") }}</p>
     </form>
 {% endblock %}

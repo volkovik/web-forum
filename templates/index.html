@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1 class="mb-4">Темы</h1>
+    {# Страница со всеми категориями и превью их содержимого #}
+    <h1 class="mb-4">{{ title }}</h1>
     {% for category, topics in categories %}
         {% set topics = topics | list %}
         <div class="list-group mb-4">

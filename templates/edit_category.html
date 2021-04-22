@@ -3,8 +3,9 @@
 {% from "tools/macros.html" import input, button_delete_with_alert %}
 
 {% block content %}
-    <h1 class="mb-3">Редактировать категорию</h1>
-    <!-- Ошибки формы -->
+    {# Форма редактирования категории #}
+    <h1 class="mb-3">{{ title }}</h1>
+    {# Ошибки при проверки формы #}
     {% if error %}
         <div class="alert alert-danger" role="alert">
             {{ error }}
