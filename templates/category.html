@@ -10,9 +10,13 @@
     </div>
     {# Список тем в категории #}
     <div class="list-group">
-        {% for topic in topics.get_page(page) %}
-            {% include "tools/topic_preview.html" %}
-        {% endfor %}
+        {% if topics.get_items_length() %}
+            {% for topic in topics.get_page(page) %}
+                {% include "tools/topic_preview.html" %}
+            {% endfor %}
+        {% else %}
+            <h5>В данной категории ещё нет тем</h5>
+        {% endif %}
     </div>
     {# Навигация по страницам #}
     {% if category %}
