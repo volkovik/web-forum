@@ -1,0 +1,131 @@
+{% macro create_pagination(pagination, page, db_model_id, route) -%}
+    {#
+    Функция, которая создаёт навигацию по страницам элементов
+
+    items - класс Pagination (core/utilities), элементы, которые показываются по странично
+    page - текущая страница
+    db_model_id - ID модели базы данных, которая связанна со страницой (например, страница темы, на которой показываются
+    комментарии)
+    route - название функции, которая обрабатывает страницы
+    #}
+    {% set max_pages = pagination.get_max_pages() %}
+    {# Если доступна только одна страница, то навигация будет скрыта #}
+    {% if max_pages != 1 %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {# Если текущая страница не первая, то будет доступна кнопка для перехода на предыдущую страницу #}
+                {% if page != 1 and max_pages >= 2 %}
+                    <li class="page-item">
+                        <a href="{{ url_for(route, id=db_model_id, page=page - 1) }}" class="page-link">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {# Показываем дополнительную кнопки для страниц. Если промежуток между текущей и начальной страницей
+                слишком большой, то вместо этих страниц в этом промежутке показывается кнопка с тремя точками #}
+                {% if page >= 4 %}
+                    <li class="page-item">
+                        <a href="{{ url_for(route, id=db_model_id, page=1) }}" class="page-link">1</a>
+                    </li>
+                    {% if page == 5 %}
+                        <li class="page-item">
+                            <a href="{{ url_for(route, id=db_model_id, page=2) }}" class="page-link">2</a>
+                        </li>
+                    {% elif page >= 6 %}
+                        <li class="page-item disabled"><a href="#" class="page-link">...</a></li>
+                    {% endif %}
+                {% endif %}
+                {# Показываем ещё кнопки, и кнопку с текущей страницей #}
+                {% for p in range(page - 2 if page - 2 > 1 else 1, page + 3 if page + 2 < max_pages else max_pages + 1) %}
+                    <li class="page-item{% if page == p %} active{% endif %}">
+                        <a href="{{ url_for(route, id=db_model_id, page=p) }}" class="page-link">
+                            {{ p }}
+                        </a>
+                    </li>
+                {% endfor %}
+                {# Такой же алгоритм, как с предыдущими доп. кнопками, но только в конце навигации #}
+                {% if page <= max_pages - 3 %}
+                    {% if page == max_pages - 4 %}
+                        <li class="page-item">
+                            <a href="{{ url_for(route, id=db_model_id, page=max_pages - 1) }}"
+                               class="page-link">{{ max_pages - 1 }}</a>
+                        </li>
+                    {% elif page <= max_pages - 4 %}
+                        <li class="page-item disabled"><a href="#" class="page-link">...</a></li>
+                    {% endif %}
+                    <li class="page-item">
+                        <a href="{{ url_for(route, id=db_model_id, page=max_pages) }}" class="page-link">
+                            {{ max_pages }}
+                        </a>
+                    </li>
+                {% endif %}
+                {# Если текущая страница не последняя, то показывать кнопку для перехода на следующую страницу #}
+                {% if page != max_pages and max_pages >= 2 %}
+                    <li class="page-item">
+                        <a href="{{ url_for(route, id=db_model_id, page=page + 1) }}" class="page-link">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{%- endmacro %}
+
+{% macro input(field, type="", disabled=False) -%}
+    {#
+    Создание поля ввода
+
+    field - поле ввода
+    type - тип поля (пароль, почта и т.д.)
+    disabled - поле недоступно
+    #}
+    <fieldset {% if disabled %}disabled{% endif %}>
+        <p>
+            {% if field.type == "BooleanField" %}
+                <div class="form-check">
+                    {{ field(class="form-check-input", type="checkbox") }}
+                    <span class="form-check-label">{{ field.label }}</span>
+                </div>
+            {% else %}
+                <span class="text-muted">{{ field.label }}</span>
+                {{ field(class="form-control", type=type) }}
+            {% endif %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+        </p>
+    </fieldset>
+{%- endmacro %}
+
+{% macro button_delete_with_alert(title, description, field) %}
+    {#
+    Создание кнопки удаление с предупреждением
+
+    title - заголовок
+    description - описание
+    field - кнопка submit/delete
+    #}
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        Удалить
+    </button>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">{{ title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ description }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    {{ field(type="submit", class="btn btn-danger") }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

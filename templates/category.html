@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% from "tools/macros.html" import create_pagination %}
+
+{% block content %}
+    {# Заголовок с количеством тем в категории #}
+    <div class="d-flex justify-content-between">
+        <h1 class="mb-4">{{ title }}</h1>
+        <span class="badge bg-dark rounded-pill align-self-center">{{ topics.get_items_length() }}</span>
+    </div>
+    {# Список тем в категории #}
+    <div class="list-group">
+        {% if topics.get_items_length() %}
+            {% for topic in topics.get_page(page) %}
+                {% include "tools/topic_preview.html" %}
+            {% endfor %}
+        {% else %}
+            <h5>В данной категории ещё нет тем</h5>
+        {% endif %}
+    </div>
+    {# Навигация по страницам #}
+    {% if category %}
+        {{ create_pagination(topics, page, category.id, "category_content") }}
+    {% else %}
+        {{ create_pagination(topics, page, "no_category", "category_content") }}
+    {% endif %}
+{% endblock %}

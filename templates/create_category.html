@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% from "tools/macros.html" import input %}
+
+{% block content %}
+    {# Форма создании категории #}
+    <h1 class="mb-3">{{ title }}</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ input(form.title) }}
+        {{ input(form.locked) }}
+        <p>{{ form.submit(type="submit", class="btn btn-dark") }}</p>
+    </form>
+{% endblock %}

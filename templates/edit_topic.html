@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% from "tools/macros.html" import input, button_delete_with_alert %}
+
+{% block content %}
+    {# Форма редактирования темы #}
+    <h1 class="mb-3">{{ title }}</h1>
+    {# Ошибки формы #}
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ input(form.title) }}
+        {{ input(form.text) }}
+        {{ input(form.category) }}
+        {# Параметр доступен только для администраторов #}
+        {% if current_user.is_admin() %}
+            {{ input(form.locked) }}
+        {% endif %}
+        {# Уведомление об удалении #}
+        <div class="d-flex justify-content-between">
+            {{ form.submit(type="submit", class="btn btn-dark") }}
+            {{ button_delete_with_alert("Удаление темы", "Вы действительно хотите удалить данную тему?", form.delete) }}
+        </div>
+    </form>
+{% endblock %}

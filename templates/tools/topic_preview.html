@@ -1,0 +1,50 @@
+{# Шаблон для превью темы в категориях и на главной странице форума #}
+<a href="{{ url_for("topic_content", id=topic.id) }}"
+   class="list-group-item list-group-item-action">
+    <div class="d-flex justify-content-between">
+        <h6 class="mb-1">
+            {# Показывать иконку кнопки, если тема закреплена #}
+            {% if topic.is_pinned %}
+                <i class="bi bi-pin-angle-fill"></i>
+            {% endif %}
+            {% if topic.is_locked %}
+                <i class="bi bi-lock-fill"></i>
+            {% endif %}
+            {# Сократим заголовок, чтобы не заполнять очень много места #}
+            {% if topic.title.split().__len__() > 12 %}
+                {{ " ".join(topic.title.split()[:12]) }}...
+            {% else %}
+                {{ topic.title }}
+            {% endif %}
+        </h6>
+        <small class="text-muted text-end">{{ topic.get_created_time() }} <i class="bi bi-clock-fill"></i></small>
+    </div>
+    <small class="mb-1">
+        {# И обязательно сократим описание темы #}
+        {% if topic.text.split().__len__() > 16 %}
+            {{ " ".join(topic.text.split()[:16]) }}...
+        {% else %}
+            {{ topic.text }}
+        {% endif %}
+    </small>
+    <div class="d-flex justify-content-between text-muted">
+        <small>
+            <i class="bi bi-person-fill"></i>
+            {# Если автор темы не найден, то вывести в качестве имени "удалён" #}
+            {% if topic.author %}
+                {{ topic.author.username }}
+            {% else %}
+                удалён
+            {% endif %}
+        </small>
+        <small>
+            {# Количество комментариев в теме #}
+            {% if topic.comments | length == 0 %}
+                Нет ответов
+            {% else %}
+                {{ make_agree_with_number(topic.comments | length, "ответ") }}
+            {% endif %}
+            <i class="bi bi-reply-fill"></i>
+        </small>
+    </div>
+</a>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% from "tools/macros.html" import input %}
+
+{% block content %}
+    {# Форма регистрации #}
+    <h3>{{ title }}</h3>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ input(form.username) }}
+        {{ input(form.email, "email") }}
+        {{ input(form.password, "password") }}
+        {{ input(form.password_again, "password") }}
+        <p>{{ form.submit(type="submit", class="btn btn-dark float-end") }}</p>
+    </form>
+{% endblock %}
